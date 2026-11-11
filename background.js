@@ -166,26 +166,54 @@ function waitForLoad(tabId, ms = 8000) {
   });
 }
 
+// The page's main background color, read from a screenshot of the tab: the
+// most common color along the page's left, right and bottom edges.
+async function pageColor(windowId) {
+  try {
+    const shot = await chrome.tabs.captureVisibleTab(windowId, { format: "png" });
+    const bmp = await createImageBitmap(await (await fetch(shot)).blob());
+    const c = new OffscreenCanvas(bmp.width, bmp.height);
+    const g = c.getContext("2d", { willReadFrequently: true });
+    g.drawImage(bmp, 0, 0);
+    const pts = [];
+    for (const fx of [0.005, 0.02, 0.98]) for (const fy of [0.15, 0.3, 0.45, 0.6, 0.75, 0.9]) pts.push([fx, fy]);
+    for (const fx of [0.2, 0.4, 0.6, 0.8]) pts.push([fx, 0.985]);
+    const counts = new Map();
+    for (const [fx, fy] of pts) {
+      const [r, gg, b] = g.getImageData(Math.floor(bmp.width * fx), Math.floor(bmp.height * fy), 1, 1).data;
+      const key = `${r},${gg},${b}`;
+      counts.set(key, (counts.get(key) || 0) + 1);
+    }
+    const [best] = [...counts.entries()].sort((a, b) => b[1] - a[1])[0];
+    return `rgb(${best})`;
+  } catch {
+    return null;
+  }
+}
+
 /** Shows the tab's page at exactly w×h, centered. */
 async function emulate(tabId, { w, h, dpr = 0, ua = null, label, key }) {
   const before = await getEmulation(tabId);
   let url;
   let real = before?.real || null;
+  let bg = before?.bg || null;
   if (before) {
     url = (await chrome.storage.session.get(viewUrlKey(tabId)))[viewUrlKey(tabId)] || before.url;
   } else {
-    url = (await chrome.tabs.get(tabId)).url;
+    const tab = await chrome.tabs.get(tabId);
+    url = tab.url;
     const m = await measure(tabId);
     if (m) real = { availW: m.innerWidth, availH: m.innerHeight };
+    bg = await pageColor(tab.windowId);
   }
   if (!/^https?:/i.test(url || "")) return { error: "Open a website first, then pick a size." };
 
   await setViewRules(tabId, ua);
   await chrome.storage.session.set({
-    [emuKey(tabId)]: { label, key, w, h, url, real },
+    [emuKey(tabId)]: { label, key, w, h, url, real, bg },
     [viewUrlKey(tabId)]: url,
   });
-  const p = new URLSearchParams({ w: String(w), h: String(h), ua: ua || "", dpr: String(dpr || 0), u: url });
+  const p = new URLSearchParams({ w: String(w), h: String(h), ua: ua || "", dpr: String(dpr || 0), bg: bg || "", u: url });
   await chrome.tabs.update(tabId, { url: `${VIEW_URL}?${p}` });
   return {};
 }

@@ -58,25 +58,9 @@
   // Where we are, so Reset returns to the same page.
   const reportUrl = () => post({ wsc: "url", href: location.href, title: document.title });
 
-  // The page's background color, so the view can use a nearby shade around it.
-  const reportBg = () => {
-    const clear = (c) => !c || c === "transparent" || /rgba\([^)]*,\s*0\)$/.test(c);
-    let c = document.body && getComputedStyle(document.body).backgroundColor;
-    if (clear(c)) c = document.documentElement && getComputedStyle(document.documentElement).backgroundColor;
-    if (clear(c)) c = "rgb(255, 255, 255)";
-    post({ wsc: "bg", color: c });
-  };
-
   reportUrl();
-  document.addEventListener("DOMContentLoaded", () => {
-    reportUrl();
-    reportBg();
-  });
-  window.addEventListener("load", () => {
-    reportUrl();
-    reportBg();
-    setTimeout(reportBg, 1000);
-  });
+  document.addEventListener("DOMContentLoaded", reportUrl);
+  window.addEventListener("load", reportUrl);
   window.addEventListener("popstate", reportUrl);
   window.addEventListener("hashchange", reportUrl);
   for (const m of ["pushState", "replaceState"]) {

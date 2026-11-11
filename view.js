@@ -41,22 +41,28 @@ function fit() {
 fit();
 window.addEventListener("resize", fit);
 
-// Background: the site's own color, nudged a little lighter or darker.
+// Background: a softer version of the site's own color.
+//   white → off-white, black → gray, red → soft red.
 function shadeOf(color) {
   const m = String(color).match(/rgba?\(([^)]+)\)/);
   if (!m) return null;
-  const [r, g, b, a = 1] = m[1].split(/[\s,/]+/).filter(Boolean).map(Number);
-  if (a === 0) return null;
+  const [r, g, b] = m[1].split(/[\s,/]+/).filter(Boolean).map(Number);
+  if ([r, g, b].some((n) => !Number.isFinite(n))) return null;
   const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  const dark = lum < 0.5;
-  const f = (c) => Math.round(dark ? c + (255 - c) * 0.09 : c * 0.92);
-  return { css: `rgb(${f(r)}, ${f(g)}, ${f(b)})`, dark };
+  let f;
+  if (lum > 0.88) f = (c) => c * 0.95; // very light: a touch darker (off-white)
+  else if (lum < 0.25) f = (c) => c + (255 - c) * 0.16; // dark: lighter (gray)
+  else f = (c) => c + (255 - c) * 0.35; // colors: mixed with white (soft)
+  const out = [r, g, b].map((c) => Math.round(f(c)));
+  const outLum = (0.299 * out[0] + 0.587 * out[1] + 0.114 * out[2]) / 255;
+  return { css: `rgb(${out.join(", ")})`, dark: outLum < 0.5 };
 }
 function applyBackground(color) {
   const s = shadeOf(color) || shadeOf("rgb(255, 255, 255)");
   document.body.style.backgroundColor = s.css;
   document.body.classList.toggle("dark", s.dark);
 }
+applyBackground(params.get("bg") || "rgb(255, 255, 255)");
 
 let tabId = null;
 function saveUrl() {
@@ -75,7 +81,5 @@ window.addEventListener("message", (e) => {
     currentUrl = String(e.data.href);
     if (e.data.title) document.title = e.data.title;
     saveUrl();
-  } else if (e.data?.wsc === "bg") {
-    applyBackground(e.data.color);
   }
 });
