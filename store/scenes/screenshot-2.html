@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Screenshot 2</title>
+<link rel="stylesheet" href="../../popup.css">
+<link rel="stylesheet" href="scene.css">
+</head>
+<body>
+<div class="scene">
+  <div class="copy" style="top: 100px; width: 480px">
+    <div class="kicker">Phones &amp; tablets</div>
+    <h1 style="font-size: 50px">Real phone layouts.<br><em>No DevTools.</em></h1>
+    <p>iPhone, Galaxy, Pixel, iPad and more at their exact viewport size, centered on a soft shade of your site's own color.</p>
+  </div>
+
+  <div class="browser" style="left: 560px; top: 60px; width: 680px; height: 680px; background: #ebebeb">
+    <div class="chrome">
+      <div class="dots"><i></i><i></i><i></i></div>
+      <div class="url">your-website.com</div>
+      <div class="ext"><img src="../../icons/icon48.png" alt=""><b>1456</b></div>
+    </div>
+    <div style="height: 634px; display: flex; align-items: center; justify-content: center">
+      <div style="width: 270px; height: 586px; box-shadow: 0 0 0 1px rgba(0,0,0,.08), 0 10px 40px rgba(0,0,0,.18); overflow: hidden">
+        <div class="site">
+          <nav><span class="logo">Brand</span><span class="menu"></span></nav>
+          <div class="hero" style="padding: 14px 18px"><h2 style="font-size: 24px">A layout that fits every screen</h2><p style="font-size: 13px">Now at 393 × 852.</p><span class="btn">Get started</span></div>
+          <div class="cards" style="padding: 0 18px; grid-template-columns: 1fr"><div class="card" style="height: 90px"></div><div class="card" style="height: 90px"></div><div class="card" style="height: 90px"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="popup-wrap" id="pop" style="left: 72px; top: 450px; width: 300px"></div>
+</div>
+<script src="../../presets.js"></script>
+<script src="popup-mock.js"></script>
+<script>
+popupMock(document.getElementById("pop"), {
+  window: "1456 × 1040", viewport: "393 × 852", emu: "iPhone 14 Pro / 15 / 16 (393 × 852)",
+  active: "Mobile-9", tablets: 0, phones: 2, phoneStart: 9, footer: false,
+});
+// Keep this one compact: only the Mobile list.
+document.querySelectorAll("#pop section").forEach((s, i) => { if (i < 3) s.remove(); });
+</script>
+</body>
+</html>

@@ -48,3 +48,7 @@ Chrome blocks extensions there.
 ## License
 
 MIT
+
+## Privacy
+
+The extension collects no data. See the [Privacy Policy](PRIVACY.md).

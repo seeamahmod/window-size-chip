@@ -1,0 +1,55 @@
+/* Shared styles for the store screenshots (rendered with headless Chrome). */
+html, body { margin: 0; }
+body {
+  width: 1280px; height: 800px; max-height: none; overflow: hidden;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: #0e1612; color: #f1f4f2;
+}
+.scene { position: relative; width: 1280px; height: 800px; }
+.copy { position: absolute; left: 72px; top: 96px; width: 470px; }
+.copy .kicker { color: #34c77b; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: 15px; }
+.copy h1 { margin: 14px 0 18px; font-size: 54px; line-height: 1.04; letter-spacing: -1px; }
+.copy h1 em { font-style: normal; color: #34c77b; }
+.copy p { margin: 0; font-size: 21px; line-height: 1.5; color: #b9c6bf; }
+.copy ul { margin: 26px 0 0; padding: 0; list-style: none; display: grid; gap: 12px; font-size: 19px; color: #dfe7e2; }
+.copy li::before { content: "✓"; color: #34c77b; font-weight: 700; margin-right: 10px; }
+
+/* A browser window drawing. */
+.browser {
+  position: absolute; border-radius: 14px; overflow: hidden;
+  background: #f4f6f5; box-shadow: 0 30px 80px rgba(0, 0, 0, .5);
+}
+.browser .chrome {
+  height: 46px; background: #202124; display: flex; align-items: center; gap: 12px; padding: 0 14px;
+}
+.browser .dots { display: flex; gap: 7px; }
+.browser .dots i { width: 11px; height: 11px; border-radius: 50%; background: #5f6368; }
+.browser .url { flex: 1; height: 28px; border-radius: 14px; background: #35363a; color: #c4c7c5; font-size: 13px; display: flex; align-items: center; padding: 0 14px; }
+.browser .ext { position: relative; width: 28px; height: 28px; }
+.browser .ext img { width: 28px; height: 28px; }
+.browser .ext b {
+  position: absolute; right: -10px; bottom: -7px; background: #1f6f4a; color: #fff;
+  font-size: 10px; padding: 1px 4px; border-radius: 5px; border: 1.5px solid #202124;
+}
+
+/* The extension popup, built from the real popup.css. */
+.popup-wrap {
+  position: absolute; width: 300px; border-radius: 12px; overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .55); border: 1px solid #34363b;
+}
+.popup-wrap > .pop { background: var(--bg); color: var(--text); font-size: 13px; }
+.popup-wrap header { position: static; }
+
+/* A simple made-up web page used inside the screenshots. */
+.site { background: #fff; color: #1d2621; font-family: system-ui, sans-serif; height: 100%; }
+.site nav { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; }
+.site .logo { font-weight: 800; color: #1f6f4a; font-size: 18px; }
+.site .links { display: flex; gap: 16px; color: #56635c; font-size: 14px; }
+.site .menu { width: 22px; height: 14px; border-top: 2px solid #1d2621; border-bottom: 2px solid #1d2621; position: relative; }
+.site .menu::after { content: ""; position: absolute; left: 0; right: 0; top: 4px; border-top: 2px solid #1d2621; }
+.site .hero { padding: 26px 22px; }
+.site .hero h2 { margin: 0 0 10px; font-size: 30px; line-height: 1.1; }
+.site .hero p { margin: 0 0 18px; color: #56635c; font-size: 15px; line-height: 1.5; }
+.site .btn { display: inline-block; background: #1f6f4a; color: #fff; padding: 11px 18px; border-radius: 9px; font-weight: 600; font-size: 14px; }
+.site .cards { display: grid; gap: 12px; padding: 0 22px 22px; }
+.site .card { height: 110px; border-radius: 12px; background: #e3ebe7; }

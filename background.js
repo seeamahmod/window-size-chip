@@ -3,31 +3,8 @@ importScripts("presets.js");
 
 // ---------- Toolbar icon + badge ----------
 
-function drawIcon(size) {
-  const c = new OffscreenCanvas(size, size);
-  const g = c.getContext("2d");
-  const s = size / 16;
-  g.fillStyle = "#1f6f4a";
-  g.beginPath();
-  g.roundRect(0, 0, size, size, 3 * s);
-  g.fill();
-  g.strokeStyle = "#ffffff";
-  g.lineWidth = 1.5 * s;
-  g.strokeRect(3.5 * s, 3.5 * s, 9 * s, 9 * s);
-  g.fillStyle = "#ffffff";
-  g.beginPath();
-  g.moveTo(12.5 * s, 8 * s);
-  g.lineTo(12.5 * s, 12.5 * s);
-  g.lineTo(8 * s, 12.5 * s);
-  g.closePath();
-  g.fill();
-  return g.getImageData(0, 0, size, size);
-}
-
+// The icon itself comes from icons/ via the manifest; only the badge is styled here.
 function setIcon() {
-  chrome.action.setIcon({
-    imageData: { 16: drawIcon(16), 32: drawIcon(32), 48: drawIcon(48) },
-  });
   chrome.action.setBadgeBackgroundColor({ color: "#1f6f4a" });
   chrome.action.setBadgeTextColor?.({ color: "#ffffff" });
 }

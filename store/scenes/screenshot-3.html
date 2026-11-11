@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Screenshot 3</title>
+<link rel="stylesheet" href="../../popup.css">
+<link rel="stylesheet" href="scene.css">
+<style>
+  .site.dark { background: #0d1117; color: #e6edf3; }
+  .site.dark .logo { color: #34c77b; }
+  .site.dark .links { color: #9aa5b1; }
+  .site.dark .hero p { color: #9aa5b1; }
+  .site.dark .card { background: #1b222c; }
+</style>
+</head>
+<body>
+<div class="scene">
+  <div class="copy" style="top: 110px; width: 420px">
+    <div class="kicker">Vertical / Horizontal</div>
+    <h1>Turn any device <em>on its side.</em></h1>
+    <p>Check tablet and phone layouts in both orientations. Dark sites sit on a soft gray, light sites on off-white.</p>
+  </div>
+
+  <div class="browser" style="left: 520px; top: 70px; width: 720px; height: 520px; background: #34373c">
+    <div class="chrome">
+      <div class="dots"><i></i><i></i><i></i></div>
+      <div class="url">your-website.com</div>
+      <div class="ext"><img src="../../icons/icon48.png" alt=""><b>1456</b></div>
+    </div>
+    <div style="height: 474px; display: flex; align-items: center; justify-content: center">
+      <div style="width: 560px; height: 420px; box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 10px 40px rgba(0,0,0,.5); overflow: hidden">
+        <div class="site dark">
+          <nav><span class="logo">Brand</span><span class="links"><span>Product</span><span>Pricing</span><span>About</span></span></nav>
+          <div class="hero"><h2>A layout that fits every screen</h2><p>iPad Mini, horizontal: 1024 × 768.</p><span class="btn">Get started</span></div>
+          <div class="cards" style="grid-template-columns: repeat(3, 1fr)"><div class="card"></div><div class="card"></div><div class="card"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="popup-wrap" id="pop" style="left: 110px; top: 400px"></div>
+</div>
+<script src="../../presets.js"></script>
+<script src="popup-mock.js"></script>
+<script>
+popupMock(document.getElementById("pop"), {
+  window: "1456 × 1040", viewport: "1024 × 768", emu: "iPad Mini (1024 × 768, horizontal)",
+  active: "Tablet-0", landscape: true, tablets: 2, phones: 0, footer: false,
+});
+document.querySelectorAll("#pop section").forEach((s, i) => { if (i === 0 || i === 3) s.remove(); });
+</script>
+</body>
+</html>
