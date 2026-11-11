@@ -59,8 +59,8 @@ async function run(msg) {
   document.body.style.cursor = "progress";
   try {
     const res = await send(msg);
+    // Only real problems are shown; informational notes are skipped.
     if (res?.error) showStatus(res.error);
-    else if (res?.note) showStatus(res.note);
   } finally {
     document.body.style.cursor = "";
     refresh();
