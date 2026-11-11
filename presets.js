@@ -7,6 +7,8 @@ const UA = {
   androidTab: "Mozilla/5.0 (Linux; Android 14; SM-X710) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
 };
 
+const PLATFORM = { ios: "iPhone", ipad: "iPad", android: "Linux armv81", androidTab: "Linux armv81" };
+
 // Desktop presets resize the real window so the page's viewport is exactly this wide.
 const DESKTOP = [1920, 1600, 1536, 1440, 1366, 1280, 1200, 1024];
 

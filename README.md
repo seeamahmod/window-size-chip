@@ -14,16 +14,16 @@ it to common screen sizes in one click.
     is resized so the page's viewport is exactly that wide. If your screen is too
     narrow for that size, it's emulated and scaled down to fit.
   - **Tablet and mobile**: iPhone SE through iPhone 16 Pro Max, Galaxy, Pixel,
-    Galaxy Fold, iPad Mini/Air/Pro, Galaxy Tab, Surface Pro. These are emulated
-    on the current tab (exact viewport, pixel density, touch and mobile user
-    agent), since Chrome won't shrink a real window that small.
+    Galaxy Fold, iPad Mini/Air/Pro, Galaxy Tab, Surface Pro. The page is shown
+    at the device's exact viewport, centered in the tab on a shade just lighter
+    or darker than the site's own background, with the device's mobile user
+    agent and pixel density. If it doesn't fit, it's scaled down.
   - **Vertical / Horizontal**: turn phones and tablets on their side.
   - **Custom**: type a width (and optionally a height).
-  - **Reset** ends emulation on the tab.
+  - **Reset** goes back to the normal page.
 
-While a tablet or mobile size is active, Chrome shows a "Window Size Chip started
-debugging this browser" bar. That's how extensions emulate devices; press
-**Reset** (or **Cancel** on the bar) to end it.
+A few sites refuse to be shown inside another page; those may stay blank at
+phone and tablet sizes.
 
 ## Install (unpacked)
 

@@ -1,10 +1,11 @@
 {
   "manifest_version": 3,
   "name": "Window Size Chip",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "author": "Seeam Ahmod",
   "description": "Shows the live width × height of your browser window and resizes it to common desktop, tablet and mobile sizes.",
-  "permissions": ["storage", "tabs", "debugger"],
+  "permissions": ["storage", "tabs", "declarativeNetRequestWithHostAccess"],
+  "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"
   },
@@ -18,6 +19,13 @@
       "js": ["content.js"],
       "run_at": "document_idle",
       "all_frames": false
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["inject.js"],
+      "run_at": "document_start",
+      "all_frames": true,
+      "world": "MAIN"
     }
   ]
 }

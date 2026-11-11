@@ -1,0 +1,25 @@
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  /* Replaced with a shade of the site's own background once it loads. */
+  background: #ececec;
+  overflow: hidden;
+  transition: background-color .25s ease;
+}
+#stage {
+  height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+#box {
+  position: relative; flex: none;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .08), 0 10px 40px rgba(0, 0, 0, .18);
+}
+body.dark #box { box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 10px 40px rgba(0, 0, 0, .5); }
+#page {
+  position: absolute; left: 0; top: 0;
+  display: block; border: 0;
+  background: #fff;
+  transform-origin: 0 0;
+}

@@ -85,84 +85,122 @@ async function getEmulation(tabId) {
   return (await chrome.storage.session.get(k))[k] || null;
 }
 
-// Attaches the debugger unless this extension is already attached to the tab
-// (e.g. when switching a device between vertical and horizontal).
-async function attach(tabId) {
-  try {
-    // Only succeeds if we're already attached.
-    await chrome.debugger.sendCommand({ tabId }, "Runtime.evaluate", { expression: "1" });
-    return;
-  } catch {
-    /* not attached yet */
+// The tab shows view.html, which loads the site in an iframe of the exact size,
+// centered on a shade of the site's own background. Session rules let sites
+// load in the iframe and send the device's user agent; inject.js does the rest
+// inside the page.
+
+const VIEW_URL = chrome.runtime.getURL("view.html");
+const viewUrlKey = (tabId) => `viewurl_${tabId}`;
+const ruleIds = (tabId) => [tabId * 4 + 1, tabId * 4 + 2];
+const SUB_RESOURCES = [
+  "sub_frame", "stylesheet", "script", "image", "font", "object", "xmlhttprequest",
+  "ping", "csp_report", "media", "websocket", "other",
+];
+
+async function setViewRules(tabId, ua) {
+  const [uaId, frameId] = ruleIds(tabId);
+  const rules = [
+    {
+      id: frameId,
+      priority: 1,
+      action: {
+        type: "modifyHeaders",
+        responseHeaders: [
+          { header: "x-frame-options", operation: "remove" },
+          { header: "content-security-policy", operation: "remove" },
+        ],
+      },
+      condition: { tabIds: [tabId], resourceTypes: ["sub_frame"] },
+    },
+  ];
+  if (ua) {
+    const apple = ua === "ios" || ua === "ipad";
+    rules.push({
+      id: uaId,
+      priority: 1,
+      action: {
+        type: "modifyHeaders",
+        requestHeaders: [
+          { header: "user-agent", operation: "set", value: UA[ua] },
+          { header: "sec-ch-ua-mobile", operation: "set", value: ua === "ios" || ua === "android" ? "?1" : "?0" },
+          { header: "sec-ch-ua-platform", operation: "set", value: apple ? '"iOS"' : '"Android"' },
+        ],
+      },
+      condition: { tabIds: [tabId], resourceTypes: SUB_RESOURCES },
+    });
   }
-  try {
-    await chrome.debugger.attach({ tabId }, "1.3");
-  } catch (e) {
-    const msg = String(e?.message || e);
-    if (/already attached/i.test(msg)) {
-      throw new Error("Another tool is debugging this tab (for example DevTools device mode or another extension). Close it and try again.");
-    }
-    throw e;
-  }
+  await chrome.declarativeNetRequest.updateSessionRules({ removeRuleIds: ruleIds(tabId), addRules: rules });
 }
 
-const cdp = (tabId, method, params = {}) => chrome.debugger.sendCommand({ tabId }, method, params);
+function clearViewRules(tabId) {
+  return chrome.declarativeNetRequest.updateSessionRules({ removeRuleIds: ruleIds(tabId) }).catch(() => {});
+}
 
-/**
- * Emulates a viewport of w×h on the tab. If it's bigger than the real viewport
- * the page is scaled down to fit, like DevTools' device toolbar.
- */
-async function emulate(tabId, { w, h, dpr = 0, mobile = false, ua = null, label, key }) {
+function waitForLoad(tabId, ms = 8000) {
+  return new Promise((resolve) => {
+    const done = () => {
+      chrome.tabs.onUpdated.removeListener(onUpd);
+      clearTimeout(timer);
+      resolve();
+    };
+    const onUpd = (id, info) => {
+      if (id === tabId && info.status === "complete") done();
+    };
+    const timer = setTimeout(done, ms);
+    chrome.tabs.onUpdated.addListener(onUpd);
+  });
+}
+
+/** Shows the tab's page at exactly w×h, centered. */
+async function emulate(tabId, { w, h, dpr = 0, ua = null, label, key }) {
   const before = await getEmulation(tabId);
-  const real = await measure(tabId);
-  // Real viewport size (with any previous emulation removed).
-  let availW = real?.outerWidth ? real.outerWidth - 16 : 1200;
-  let availH = real?.outerHeight ? real.outerHeight - 140 : 800;
-  if (before?.real) ({ availW, availH } = before.real);
-  else if (real) ({ innerWidth: availW, innerHeight: availH } = real);
+  let url;
+  let real = before?.real || null;
+  if (before) {
+    url = (await chrome.storage.session.get(viewUrlKey(tabId)))[viewUrlKey(tabId)] || before.url;
+  } else {
+    url = (await chrome.tabs.get(tabId)).url;
+    const m = await measure(tabId);
+    if (m) real = { availW: m.innerWidth, availH: m.innerHeight };
+  }
+  if (!/^https?:/i.test(url || "")) return { error: "Open a website first, then pick a size." };
 
-  const scale = Math.min(1, availW / w, availH / h);
-
-  await attach(tabId);
-  await cdp(tabId, "Emulation.setDeviceMetricsOverride", {
-    width: w,
-    height: h,
-    deviceScaleFactor: dpr,
-    mobile,
-    scale: Math.round(scale * 1000) / 1000,
-  });
-  await cdp(tabId, "Emulation.setTouchEmulationEnabled", { enabled: mobile, maxTouchPoints: mobile ? 5 : 0 });
-  await cdp(tabId, "Emulation.setUserAgentOverride", { userAgent: ua ? UA[ua] : "" });
-
+  await setViewRules(tabId, ua);
   await chrome.storage.session.set({
-    [emuKey(tabId)]: { label, key, ua: !!ua, real: { availW, availH } },
+    [emuKey(tabId)]: { label, key, w, h, url, real },
+    [viewUrlKey(tabId)]: url,
   });
-
-  // Sites usually pick mobile vs desktop layout (and UA) on load, so reload
-  // whenever the user agent changes.
-  if (!!ua !== !!before?.ua || ua) await chrome.tabs.reload(tabId);
-
-  return scale < 1 ? { note: `Shown at ${Math.round(scale * 100)}% so it fits your window.` } : {};
+  const p = new URLSearchParams({ w: String(w), h: String(h), ua: ua || "", dpr: String(dpr || 0), u: url });
+  await chrome.tabs.update(tabId, { url: `${VIEW_URL}?${p}` });
+  return {};
 }
 
 async function stopEmulation(tabId) {
   const emu = await getEmulation(tabId);
   if (!emu) return;
-  await chrome.storage.session.remove(emuKey(tabId));
-  try {
-    await chrome.debugger.detach({ tabId });
-  } catch {
-    /* already detached */
+  const url = (await chrome.storage.session.get(viewUrlKey(tabId)))[viewUrlKey(tabId)] || emu.url;
+  await chrome.storage.session.remove([emuKey(tabId), viewUrlKey(tabId)]);
+  await clearViewRules(tabId);
+  const tab = await chrome.tabs.get(tabId).catch(() => null);
+  if (tab?.url?.startsWith(VIEW_URL) && url) {
+    await chrome.tabs.update(tabId, { url });
+    await waitForLoad(tabId);
   }
-  if (emu.ua) await chrome.tabs.reload(tabId);
-  await sleep(150);
 }
 
-// The user can also end emulation from Chrome's "is debugging this browser" bar.
-chrome.debugger.onDetach.addListener(({ tabId }) => {
-  if (tabId != null) chrome.storage.session.remove(emuKey(tabId));
+// Leaving the view any other way (typing a URL, Back) ends it.
+chrome.tabs.onUpdated.addListener(async (tabId, info) => {
+  if (!info.url || info.url.startsWith(VIEW_URL)) return;
+  if (await getEmulation(tabId)) {
+    await chrome.storage.session.remove([emuKey(tabId), viewUrlKey(tabId)]);
+    await clearViewRules(tabId);
+  }
 });
-chrome.tabs.onRemoved.addListener((tabId) => chrome.storage.session.remove(emuKey(tabId)));
+chrome.tabs.onRemoved.addListener((tabId) => {
+  chrome.storage.session.remove([emuKey(tabId), viewUrlKey(tabId)]);
+  clearViewRules(tabId);
+});
 
 // ---------- Real window resize (desktop presets) ----------
 
@@ -241,7 +279,10 @@ async function handle(msg, sender) {
         getEmulation(tabId),
         chrome.windows.get(windowId),
       ]);
-      return { size, emulation, window: { width: win.width, height: win.height } };
+      const viewSize = emulation
+        ? { innerWidth: emulation.w, innerHeight: emulation.h, outerWidth: win.width, outerHeight: win.height }
+        : null;
+      return { size: viewSize || size, emulation, window: { width: win.width, height: win.height } };
     }
     case "resize":
       return resizeWindowTo(tabId, windowId, msg.width);
