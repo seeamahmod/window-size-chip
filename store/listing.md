@@ -34,7 +34,7 @@ EXACT DESKTOP WIDTHS
 • The page lands on the exact pixel width you pick, accounting for borders, scrollbars and page zoom.
 
 PHONES AND TABLETS IN ONE CLICK
-• iPhone SE to iPhone 16 Pro Max, Galaxy S8 to S24 Ultra, Pixel, Galaxy Z Fold, iPad Mini, Air and Pro, Galaxy Tab and Surface Pro.
+• iPhone SE to iPhone 18 Pro Max (including iPhone Air), Galaxy S8 to S24 Ultra, Pixel, Galaxy Z Fold, iPad Mini, Air and Pro, Galaxy Tab and Surface Pro.
 • Shown centered at the device's exact viewport size, with its mobile browser identity, so sites serve their real phone or tablet layout.
 • Turn devices on their side with Vertical / Horizontal.
 • No DevTools needed.

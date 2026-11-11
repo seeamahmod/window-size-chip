@@ -14,7 +14,7 @@ it to common screen sizes in one click.
   - **Desktop**: 2560, 1920, 1600, 1536, 1440, 1366, 1280, 1200. The real window
     is resized so the page's viewport is exactly that wide. If your screen is too
     narrow for that size, it's emulated and scaled down to fit.
-  - **Tablet and mobile**: iPhone SE through iPhone 16 Pro Max, Galaxy, Pixel,
+  - **Tablet and mobile**: iPhone SE through iPhone 18 Pro Max (including iPhone Air), Galaxy, Pixel,
     Galaxy Fold, iPad Mini/Air/Pro, Galaxy Tab, Surface Pro. The page is shown
     at the device's exact viewport, centered in the tab on a shade just lighter
     or darker than the site's own background, with the device's mobile user
