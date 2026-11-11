@@ -36,7 +36,7 @@ EXACT DESKTOP WIDTHS
 PHONES AND TABLETS IN ONE CLICK
 • iPhone SE to iPhone 18 Pro Max (including iPhone Air), Galaxy S8 to S24 Ultra, Pixel, Galaxy Z Fold, iPad Mini, Air and Pro, Galaxy Tab and Surface Pro.
 • Shown centered at the device's exact viewport size, with its mobile browser identity, so sites serve their real phone or tablet layout.
-• Foldable: Surface Duo, folded or unfolded across both screens with the hinge shown.
+• Foldable: Surface Duo, folded or unfolded across both screens.
 • Turn devices on their side with Vertical / Horizontal.
 • No DevTools needed.
 

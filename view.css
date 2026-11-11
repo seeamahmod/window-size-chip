@@ -17,10 +17,6 @@ body {
   box-shadow: 0 0 0 1px rgba(0, 0, 0, .08), 0 10px 40px rgba(0, 0, 0, .18);
 }
 body.dark #box { box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 10px 40px rgba(0, 0, 0, .5); }
-.hinge {
-  position: absolute; z-index: 2; pointer-events: none;
-  background: linear-gradient(90deg, #1b1b1d, #3a3a3e 50%, #1b1b1d);
-}
 #page {
   position: absolute; left: 0; top: 0;
   display: block; border: 0;

@@ -210,7 +210,7 @@ async function pageColor(windowId) {
 }
 
 /** Shows the tab's page at exactly w×h, centered. */
-async function emulate(tabId, { w, h, dpr = 0, ua = null, hinge = 0, hingeDir = "v", label, key }) {
+async function emulate(tabId, { w, h, dpr = 0, ua = null, label, key }) {
   const before = await getEmulation(tabId);
   let url;
   let real = before?.real || null;
@@ -231,7 +231,7 @@ async function emulate(tabId, { w, h, dpr = 0, ua = null, hinge = 0, hingeDir = 
     [emuKey(tabId)]: { label, key, w, h, url, real, bg },
     [viewUrlKey(tabId)]: url,
   });
-  const p = new URLSearchParams({ w: String(w), h: String(h), ua: ua || "", dpr: String(dpr || 0), bg: bg || "", hinge: String(hinge), hd: hingeDir, u: url });
+  const p = new URLSearchParams({ w: String(w), h: String(h), ua: ua || "", dpr: String(dpr || 0), bg: bg || "", u: url });
   await chrome.tabs.update(tabId, { url: `${VIEW_URL}?${p}` });
   return {};
 }
@@ -389,8 +389,6 @@ async function handle(msg, sender) {
         h,
         dpr: d.dpr,
         ua: d.ua,
-        hinge: dims.hinge || 0,
-        hingeDir: land ? "h" : "v",
         label: `${d.name} (${w} × ${h}${notes.length ? ", " + notes.join(", ") : ""})`,
         key: `${msg.group}-${msg.index}`,
       });

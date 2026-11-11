@@ -20,7 +20,7 @@ it to common screen sizes in one click.
     or darker than the site's own background, with the device's mobile user
     agent and pixel density. If it doesn't fit, it's scaled down.
   - **Foldable**: Surface Duo, folded (540 × 720) or unfolded across both
-    screens (1114 × 720) with the hinge shown in the middle.
+    screens (1114 × 720).
   - **Vertical / Horizontal**: turn phones, tablets and foldables on their side.
   - **Custom**: type a width (and optionally a height).
   - **Reset** goes back to the normal page.
