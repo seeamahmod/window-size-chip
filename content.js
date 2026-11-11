@@ -1,31 +1,37 @@
-// No on-page UI: this script only reports the page's live sizes to the
-// extension (for the toolbar badge and the popup).
+// No on-page UI: reports the window size to the extension (toolbar badge and
+// popup). Does no work until the window is resized or the popup asks.
 (() => {
   if (window.top !== window || window.__windowSizeChip) return;
   window.__windowSizeChip = true;
 
-  let lastSent = "";
+  let last = "";
+  let queued = false;
+
+  // At most one message per frame while the window is being dragged.
   function report() {
-    const key = `${window.outerWidth}x${window.outerHeight}`;
-    if (key === lastSent) return;
-    lastSent = key;
+    queued = false;
+    const w = window.outerWidth;
+    const h = window.outerHeight;
+    const key = `${w}x${h}`;
+    if (key === last) return;
+    last = key;
     try {
-      chrome.runtime.sendMessage({
-        type: "resized",
-        width: window.outerWidth,
-        height: window.outerHeight,
-      });
+      chrome.runtime.sendMessage({ type: "resized", width: w, height: h });
     } catch {
-      /* extension reloaded */
+      /* extension was reloaded; this copy is stale */
     }
   }
 
-  // Update on every resize event so the badge follows the drag live.
-  window.addEventListener("resize", report);
-  // Some drags (left/top edge) don't fire resize every frame; poll while visible.
-  setInterval(() => {
-    if (!document.hidden) report();
-  }, 50);
+  window.addEventListener(
+    "resize",
+    () => {
+      if (!queued) {
+        queued = true;
+        requestAnimationFrame(report);
+      }
+    },
+    { passive: true }
+  );
 
   chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     if (msg?.type !== "getSize") return;

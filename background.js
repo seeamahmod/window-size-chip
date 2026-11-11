@@ -32,7 +32,11 @@ function setIcon() {
   chrome.action.setBadgeTextColor?.({ color: "#ffffff" });
 }
 
+let lastBadge = "";
 function setBadge(width, height) {
+  const key = `${width}x${height}`;
+  if (key === lastBadge) return;
+  lastBadge = key;
   chrome.action.setBadgeText({ text: String(width) });
   chrome.action.setTitle({ title: `Window: ${width} × ${height}\nClick for preset sizes` });
 }
@@ -143,12 +147,37 @@ async function setViewRules(tabId, ua) {
     });
   }
   await chrome.declarativeNetRequest.updateSessionRules({ removeRuleIds: ids, addRules: rules });
+  await setInject(true);
+}
+
+// inject.js is only registered while some tab is showing a sized view, so
+// normal browsing never loads it.
+async function setInject(on) {
+  const [cur] = await chrome.scripting.getRegisteredContentScripts({ ids: ["wsc-inject"] });
+  if (on && !cur) {
+    await chrome.scripting.registerContentScripts([
+      {
+        id: "wsc-inject",
+        js: ["inject.js"],
+        matches: ["<all_urls>"],
+        allFrames: true,
+        runAt: "document_start",
+        world: "MAIN",
+        persistAcrossSessions: false,
+      },
+    ]);
+  } else if (!on && cur) {
+    await chrome.scripting.unregisterContentScripts({ ids: ["wsc-inject"] });
+  }
 }
 
 async function clearViewRules(tabId) {
   const ids = await ruleIds(tabId, false);
   await chrome.storage.session.remove(`rules_${tabId}`);
   if (ids.length) await chrome.declarativeNetRequest.updateSessionRules({ removeRuleIds: ids }).catch(() => {});
+  // Last sized view closed: stop loading inject.js anywhere.
+  const left = await chrome.declarativeNetRequest.getSessionRules();
+  if (!left.length) await setInject(false).catch(() => {});
 }
 
 function waitForLoad(tabId, ms = 8000) {
@@ -401,6 +430,3 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     .catch((e) => sendResponse({ error: e?.message || String(e) }));
   return true;
 });
-
-setIcon();
-updateBadge();

@@ -37,6 +37,10 @@ function showStatus(text) {
 
 async function refresh() {
   const s = await send({ cmd: "state" });
+  // Skip all DOM work when nothing changed since the last check.
+  const sig = JSON.stringify([s.size, s.window, s.emulation?.key, s.emulation?.label]);
+  if (sig === refresh.sig) return;
+  refresh.sig = sig;
   lastState = s;
   if (s.size) {
     $("now").textContent = `${s.size.outerWidth} × ${s.size.outerHeight}`;
@@ -63,6 +67,7 @@ async function run(msg) {
     if (res?.error) showStatus(res.error);
   } finally {
     document.body.style.cursor = "";
+    refresh.sig = "";
     refresh();
   }
 }
@@ -105,6 +110,6 @@ function build() {
   build();
   paintOrientation();
   refresh();
-  // Keep the numbers live while the popup is open.
-  setInterval(refresh, 300);
+  // Keep the numbers live while the popup is open (it closes when you click away).
+  setInterval(refresh, 500);
 })();
