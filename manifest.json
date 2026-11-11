@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Window Size Chip",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "author": "Seeam Ahmod",
   "description": "Shows the live width × height of your browser window and resizes it to common desktop, tablet and mobile sizes.",
   "permissions": ["storage", "tabs", "debugger"],

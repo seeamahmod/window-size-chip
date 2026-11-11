@@ -26,9 +26,8 @@ header {
 }
 .label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
 .now { font-size: 20px; font-weight: 650; }
-.win { color: var(--muted); font-size: 11px; }
-.toggle { display: flex; gap: 6px; align-items: center; color: var(--muted); cursor: pointer; }
-.toggle input { accent-color: var(--accent); margin: 0; }
+.right { text-align: right; }
+.vp { font-size: 14px; font-weight: 600; margin-top: 4px; color: var(--muted); }
 
 .emu {
   display: flex; justify-content: space-between; align-items: center; gap: 8px;

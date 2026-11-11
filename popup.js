@@ -14,11 +14,11 @@ function showStatus(text) {
 async function refresh() {
   const s = await send({ cmd: "state" });
   if (s.size) {
-    $("now").textContent = `${s.size.innerWidth} × ${s.size.innerHeight}`;
-    $("win").textContent = `window ${s.size.outerWidth} × ${s.size.outerHeight}`;
+    $("now").textContent = `${s.size.outerWidth} × ${s.size.outerHeight}`;
+    $("vp").textContent = `${s.size.innerWidth} × ${s.size.innerHeight}`;
   } else if (s.window) {
-    $("now").textContent = "—";
-    $("win").textContent = `window ${s.window.width} × ${s.window.height}`;
+    $("now").textContent = `${s.window.width} × ${s.window.height}`;
+    $("vp").textContent = "—";
   }
   $("emu").classList.toggle("hidden", !s.emulation);
   $("emuLabel").textContent = s.emulation ? `Emulating ${s.emulation.label}` : "";
@@ -69,14 +69,12 @@ function build() {
     const height = +$("ch").value || 0;
     run({ cmd: "custom", width, height });
   };
-  chrome.storage.local.get("chipHidden", ({ chipHidden }) => {
-    $("chipToggle").checked = !chipHidden;
-  });
-  $("chipToggle").onchange = (e) => chrome.storage.local.set({ chipHidden: !e.target.checked });
 }
 
 (async () => {
   [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   build();
   refresh();
+  // Keep the numbers live while the popup is open.
+  setInterval(refresh, 300);
 })();
