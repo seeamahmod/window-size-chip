@@ -65,6 +65,8 @@ footer {
   border-top: 1px solid #ffffff14;
   color: var(--muted); font-size: 11px; text-align: center;
 }
+footer a { color: var(--accent); font-weight: 600; text-decoration: none; }
+footer a:hover { text-decoration: underline; }
 .custom input {
   width: 0; flex: 1; padding: 7px 8px; border-radius: 7px;
   border: 1px solid #ffffff1f; background: var(--panel); color: var(--text); font: inherit;
