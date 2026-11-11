@@ -1,6 +1,32 @@
 /* global DESKTOP, DEVICES */
 const $ = (id) => document.getElementById(id);
 let tab;
+let orientation = "portrait";
+let lastState = null;
+
+function paintOrientation() {
+  const land = orientation === "landscape";
+  $("oPortrait").setAttribute("aria-pressed", String(!land));
+  $("oLandscape").setAttribute("aria-pressed", String(land));
+  for (const [group, el] of [["Tablet", "tablet"], ["Mobile", "mobile"]]) {
+    [...$(el).children].forEach((b, i) => {
+      const d = DEVICES[group][i];
+      b.querySelector(".sz").textContent = land ? `${d.h} × ${d.w}` : `${d.w} × ${d.h}`;
+    });
+  }
+}
+
+async function setOrientation(o) {
+  orientation = o;
+  chrome.storage.local.set({ orientation: o });
+  paintOrientation();
+  // Already showing a device? Turn it right away.
+  const k = lastState?.emulation?.mode === "frame" ? lastState.emulation.key : null;
+  if (k) {
+    const [group, index] = k.split("-");
+    run({ cmd: "emulate", group, index: +index, orientation: o });
+  }
+}
 
 function send(msg) {
   return chrome.runtime.sendMessage({ ...msg, tabId: tab.id, windowId: tab.windowId });
@@ -13,6 +39,7 @@ function showStatus(text) {
 
 async function refresh() {
   const s = await send({ cmd: "state" });
+  lastState = s;
   if (s.size) {
     $("now").textContent = `${s.size.outerWidth} × ${s.size.outerHeight}`;
     $("vp").textContent = `${s.size.innerWidth} × ${s.size.innerHeight}`;
@@ -55,13 +82,17 @@ function build() {
     DEVICES[group].forEach((d, i) => {
       const b = document.createElement("button");
       b.dataset.key = `${group}-${i}`;
-      b.innerHTML = `<span></span><span></span>`;
-      b.children[0].textContent = d.name;
-      b.children[1].textContent = `${d.w} × ${d.h}`;
-      b.onclick = () => run({ cmd: "emulate", group, index: i });
+      b.title = `${d.name} in ${d.color}`;
+      b.innerHTML = `<span class="dev"><span class="dot"></span><span><span class="n"></span><small></small></span></span><span class="sz"></span>`;
+      b.querySelector(".dot").style.background = d.hex;
+      b.querySelector(".n").textContent = d.name;
+      b.querySelector("small").textContent = d.color;
+      b.onclick = () => run({ cmd: "emulate", group, index: i, orientation });
       $(el).appendChild(b);
     });
   }
+  $("oPortrait").onclick = () => setOrientation("portrait");
+  $("oLandscape").onclick = () => setOrientation("landscape");
   $("reset").onclick = () => run({ cmd: "reset" });
   $("custom").onsubmit = (e) => {
     e.preventDefault();
@@ -73,7 +104,10 @@ function build() {
 
 (async () => {
   [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  const saved = await chrome.storage.local.get("orientation");
+  if (saved.orientation === "landscape") orientation = "landscape";
   build();
+  paintOrientation();
   refresh();
   // Keep the numbers live while the popup is open.
   setInterval(refresh, 300);

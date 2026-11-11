@@ -13,16 +13,20 @@ it to common screen sizes in one click.
   - **Desktop**: 1920, 1600, 1536, 1440, 1366, 1280, 1200, 1024. The real window
     is resized so the page's viewport is exactly that wide. If your screen is too
     narrow for that size, it's emulated and scaled down to fit.
-  - **Tablet and mobile**: iPhone SE through iPhone 16 Pro Max, Galaxy, Pixel,
-    Galaxy Fold, iPad Mini/Air/Pro, Galaxy Tab, Surface Pro. These are emulated
-    on the current tab (exact viewport, pixel density, touch and mobile user
-    agent), since Chrome won't shrink a real window that small.
+  - **Tablet and mobile**: 20 phones (iPhone SE to iPhone 17 Pro Max, Galaxy,
+    Pixel, Galaxy Fold) and 8 tablets (iPad mini/Air/Pro, Galaxy Tab, Surface
+    Pro). The page opens inside a drawn device frame in that device's own
+    finish, for example iPhone 17 Pro in Cosmic Orange, at the device's exact
+    viewport size, with its mobile user agent and pixel density.
+  - **Vertical / Horizontal**: turn phones and tablets on their side, from the
+    popup or the bar above the device.
   - **Custom**: type a width (and optionally a height).
-  - **Reset** ends emulation on the tab.
+  - **Reset** (or **Exit** above the device) goes back to the normal page.
 
-While a tablet or mobile size is active, Chrome shows a "Window Size Chip started
-debugging this browser" bar. That's how extensions emulate devices; press
-**Reset** (or **Cancel** on the bar) to end it.
+Desktop sizes use the real window, so they have no device frame. If your screen
+is too narrow for a desktop size or a custom size, Chrome shows a "Window Size
+Chip started debugging this browser" bar while it's emulated; press **Reset**
+to end it.
 
 ## Install (unpacked)
 

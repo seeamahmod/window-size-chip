@@ -52,10 +52,17 @@ button.active { background: var(--accent); color: var(--accent-ink); font-weight
 
 .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 .list { display: flex; flex-direction: column; gap: 4px; }
-.list button { display: flex; justify-content: space-between; text-align: left; }
+.list button { display: flex; justify-content: space-between; align-items: center; gap: 8px; text-align: left; }
 .list button span:last-child { color: var(--muted); }
 .list button.active span:last-child { color: var(--accent-ink); }
 
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 3px; background: var(--panel); border-radius: 9px; }
+.seg button { display: flex; align-items: center; justify-content: center; gap: 6px; background: transparent; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.list button .dev { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.dot { width: 10px; height: 10px; border-radius: 50%; flex: none; box-shadow: inset 0 0 0 1px #ffffff40; }
+.dev small { display: block; color: var(--muted); font-size: 11px; }
+.list button.active .dev small { color: var(--accent-ink); }
 .custom { display: flex; align-items: center; gap: 6px; padding-bottom: 6px; }
 footer {
   padding: 10px 14px 12px;

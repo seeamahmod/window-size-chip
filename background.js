@@ -1,4 +1,4 @@
-/* global DESKTOP, DEVICES, UA */
+/* global DEVICES, UA */
 importScripts("presets.js");
 
 // ---------- Toolbar icon + badge ----------
@@ -139,6 +139,7 @@ async function emulate(tabId, { w, h, dpr = 0, mobile = false, ua = null, label,
 async function stopEmulation(tabId) {
   const emu = await getEmulation(tabId);
   if (!emu) return;
+  if (emu.mode === "frame") return stopFrame(tabId, emu);
   await chrome.storage.session.remove(emuKey(tabId));
   try {
     await chrome.debugger.detach({ tabId });
@@ -154,6 +155,133 @@ chrome.debugger.onDetach.addListener(({ tabId }) => {
   if (tabId != null) chrome.storage.session.remove(emuKey(tabId));
 });
 chrome.tabs.onRemoved.addListener((tabId) => chrome.storage.session.remove(emuKey(tabId)));
+
+// ---------- Device frame (phones and tablets) ----------
+// The tab shows frame.html, which draws the device and loads the site in an
+// iframe of the device's exact size. Session rules let sites load in the frame
+// and send the device's user agent; inject.js does the rest inside the page.
+
+const FRAME_URL = chrome.runtime.getURL("frame.html");
+const frameUrlKey = (tabId) => `frameurl_${tabId}`;
+const ruleIds = (tabId) => [tabId * 4 + 1, tabId * 4 + 2];
+const SUB_RESOURCES = [
+  "sub_frame", "stylesheet", "script", "image", "font", "object", "xmlhttprequest",
+  "ping", "csp_report", "media", "websocket", "other",
+];
+
+async function setFrameRules(tabId, d) {
+  const [uaId, frameId] = ruleIds(tabId);
+  const rules = [
+    {
+      id: frameId,
+      priority: 1,
+      action: {
+        type: "modifyHeaders",
+        responseHeaders: [
+          { header: "x-frame-options", operation: "remove" },
+          { header: "content-security-policy", operation: "remove" },
+        ],
+      },
+      condition: { tabIds: [tabId], resourceTypes: ["sub_frame"] },
+    },
+  ];
+  if (d.ua) {
+    const ios = d.ua === "ios" || d.ua === "ipad";
+    rules.push({
+      id: uaId,
+      priority: 1,
+      action: {
+        type: "modifyHeaders",
+        requestHeaders: [
+          { header: "user-agent", operation: "set", value: UA[d.ua] },
+          { header: "sec-ch-ua-mobile", operation: "set", value: d.ua === "ios" || d.ua === "android" ? "?1" : "?0" },
+          { header: "sec-ch-ua-platform", operation: "set", value: ios ? '"iOS"' : '"Android"' },
+        ],
+      },
+      condition: { tabIds: [tabId], resourceTypes: SUB_RESOURCES },
+    });
+  }
+  await chrome.declarativeNetRequest.updateSessionRules({
+    removeRuleIds: ruleIds(tabId),
+    addRules: rules,
+  });
+}
+
+function clearFrameRules(tabId) {
+  return chrome.declarativeNetRequest.updateSessionRules({ removeRuleIds: ruleIds(tabId) }).catch(() => {});
+}
+
+function waitForLoad(tabId, ms = 8000) {
+  return new Promise((resolve) => {
+    const done = () => {
+      chrome.tabs.onUpdated.removeListener(onUpd);
+      clearTimeout(timer);
+      resolve();
+    };
+    const onUpd = (id, info) => {
+      if (id === tabId && info.status === "complete") done();
+    };
+    const timer = setTimeout(done, ms);
+    chrome.tabs.onUpdated.addListener(onUpd);
+  });
+}
+
+async function emulateFrame(tabId, group, index, orientation) {
+  const d = DEVICES[group]?.[index];
+  if (!d) return { error: "Unknown device." };
+
+  const emu = await getEmulation(tabId);
+  let url;
+  if (emu?.mode === "frame") {
+    url = (await chrome.storage.session.get(frameUrlKey(tabId)))[frameUrlKey(tabId)] || emu.url;
+  } else {
+    if (emu) await stopEmulation(tabId);
+    url = (await chrome.tabs.get(tabId)).url;
+  }
+  if (!/^https?:/i.test(url || "")) return { error: "Open a website first, then pick a device." };
+
+  const landscape = orientation === "landscape";
+  await setFrameRules(tabId, d);
+  await chrome.storage.session.set({
+    [emuKey(tabId)]: {
+      mode: "frame",
+      label: `${d.name} · ${d.color}`,
+      key: `${group}-${index}`,
+      w: landscape ? d.h : d.w,
+      h: landscape ? d.w : d.h,
+      url,
+    },
+    [frameUrlKey(tabId)]: url,
+  });
+  const p = new URLSearchParams({ g: group, i: String(index), o: landscape ? "landscape" : "portrait", u: url });
+  await chrome.tabs.update(tabId, { url: `${FRAME_URL}?${p}` });
+  return {};
+}
+
+async function stopFrame(tabId, emu) {
+  const url = (await chrome.storage.session.get(frameUrlKey(tabId)))[frameUrlKey(tabId)] || emu.url;
+  await chrome.storage.session.remove([emuKey(tabId), frameUrlKey(tabId)]);
+  await clearFrameRules(tabId);
+  const tab = await chrome.tabs.get(tabId).catch(() => null);
+  if (tab?.url?.startsWith(FRAME_URL) && url) {
+    await chrome.tabs.update(tabId, { url });
+    await waitForLoad(tabId);
+  }
+}
+
+// Leaving the frame page any other way (Exit button, typing a URL, back) ends it.
+chrome.tabs.onUpdated.addListener(async (tabId, info) => {
+  if (!info.url || info.url.startsWith(FRAME_URL)) return;
+  const emu = await getEmulation(tabId);
+  if (emu?.mode === "frame") {
+    await chrome.storage.session.remove([emuKey(tabId), frameUrlKey(tabId)]);
+    await clearFrameRules(tabId);
+  }
+});
+chrome.tabs.onRemoved.addListener((tabId) => {
+  chrome.storage.session.remove(frameUrlKey(tabId));
+  clearFrameRules(tabId);
+});
 
 // ---------- Real window resize (desktop presets) ----------
 
@@ -232,29 +360,23 @@ async function handle(msg, sender) {
         getEmulation(tabId),
         chrome.windows.get(windowId),
       ]);
-      return { size, emulation, window: { width: win.width, height: win.height } };
+      const frameSize =
+        emulation?.mode === "frame"
+          ? { innerWidth: emulation.w, innerHeight: emulation.h, outerWidth: win.width, outerHeight: win.height }
+          : null;
+      return { size: frameSize || size, emulation, window: { width: win.width, height: win.height } };
     }
     case "resize":
       return resizeWindowTo(tabId, windowId, msg.width);
-    case "emulate": {
-      const d = DEVICES[msg.group]?.[msg.index];
-      if (!d) return { error: "Unknown device." };
-      return emulate(tabId, {
-        w: d.w,
-        h: d.h,
-        dpr: d.dpr,
-        mobile: !!d.ua,
-        ua: d.ua,
-        label: `${d.name} (${d.w} × ${d.h})`,
-        key: `${msg.group}-${msg.index}`,
-      });
-    }
+    case "emulate":
+      return emulateFrame(tabId, msg.group, msg.index, msg.orientation);
     case "custom": {
       const w = Math.round(msg.width);
       const h = Math.round(msg.height || 0);
       if (!(w >= 200 && w <= 4000)) return { error: "Width must be between 200 and 4000." };
       if (h && !(h >= 200 && h <= 4000)) return { error: "Height must be between 200 and 4000." };
       if (!h && w >= 600) return resizeWindowTo(tabId, windowId, w);
+      if ((await getEmulation(tabId))?.mode === "frame") await stopEmulation(tabId);
       const m = await measure(tabId);
       const height = h || (await getEmulation(tabId))?.real?.availH || m?.innerHeight || 800;
       return emulate(tabId, {
