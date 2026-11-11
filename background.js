@@ -92,14 +92,26 @@ async function getEmulation(tabId) {
 
 const VIEW_URL = chrome.runtime.getURL("view.html");
 const viewUrlKey = (tabId) => `viewurl_${tabId}`;
-const ruleIds = (tabId) => [tabId * 4 + 1, tabId * 4 + 2];
+// Rule ids must be small integers, but Chrome's tab ids can be huge, so each
+// tab gets its own pair of ids from a counter.
+async function ruleIds(tabId, create = true) {
+  const k = `rules_${tabId}`;
+  const got = await chrome.storage.session.get([k, "ruleSeq"]);
+  if (got[k]) return got[k];
+  if (!create) return [];
+  const next = (got.ruleSeq || 0) + 2;
+  const ids = [next - 1, next];
+  await chrome.storage.session.set({ [k]: ids, ruleSeq: next });
+  return ids;
+}
 const SUB_RESOURCES = [
   "sub_frame", "stylesheet", "script", "image", "font", "object", "xmlhttprequest",
   "ping", "csp_report", "media", "websocket", "other",
 ];
 
 async function setViewRules(tabId, ua) {
-  const [uaId, frameId] = ruleIds(tabId);
+  const ids = await ruleIds(tabId);
+  const [uaId, frameId] = ids;
   const rules = [
     {
       id: frameId,
@@ -130,11 +142,13 @@ async function setViewRules(tabId, ua) {
       condition: { tabIds: [tabId], resourceTypes: SUB_RESOURCES },
     });
   }
-  await chrome.declarativeNetRequest.updateSessionRules({ removeRuleIds: ruleIds(tabId), addRules: rules });
+  await chrome.declarativeNetRequest.updateSessionRules({ removeRuleIds: ids, addRules: rules });
 }
 
-function clearViewRules(tabId) {
-  return chrome.declarativeNetRequest.updateSessionRules({ removeRuleIds: ruleIds(tabId) }).catch(() => {});
+async function clearViewRules(tabId) {
+  const ids = await ruleIds(tabId, false);
+  await chrome.storage.session.remove(`rules_${tabId}`);
+  if (ids.length) await chrome.declarativeNetRequest.updateSessionRules({ removeRuleIds: ids }).catch(() => {});
 }
 
 function waitForLoad(tabId, ms = 8000) {
