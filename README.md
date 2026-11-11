@@ -1,3 +1,4 @@
+<img width="1080" height="1350" alt="Poster 1080×1350@1x" src="https://github.com/user-attachments/assets/f77bde0b-8122-46fc-80cc-a3086616187f" />
 # Window Size Chip
 
 A Chrome extension that shows the live size of your browser window and switches
