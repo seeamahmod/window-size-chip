@@ -44,6 +44,14 @@
   if (cfg.touch) {
     def(Navigator.prototype, "maxTouchPoints", 5);
     if (!("ontouchstart" in window)) window.ontouchstart = null;
+
+    // Phones and tablets have no scrollbar taking up width; hide them so the
+    // page gets its full width, like on the real device. Scrolling still works.
+    const style = document.createElement("style");
+    style.textContent =
+      "html{scrollbar-width:none!important}" +
+      "::-webkit-scrollbar{width:0!important;height:0!important;display:none!important}";
+    (document.head || document.documentElement).appendChild(style);
   }
   if (cfg.dpr) def(window, "devicePixelRatio", cfg.dpr);
 
