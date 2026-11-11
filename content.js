@@ -1,8 +1,12 @@
 // No on-page UI: reports the window size to the extension (toolbar badge and
 // popup). Does no work until the window is resized or the popup asks.
 (() => {
-  if (window.top !== window || window.__windowSizeChip) return;
-  window.__windowSizeChip = true;
+  // Each install or update of the extension runs its own copy; a copy left
+  // over from an older version just stops responding.
+  if (window.top !== window) return;
+  const token = `${chrome.runtime.id}@${chrome.runtime.getManifest().version}`;
+  if (window.__windowSizeChip === token) return;
+  window.__windowSizeChip = token;
 
   let last = "";
   let queued = false;

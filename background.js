@@ -56,7 +56,19 @@ async function updateBadge(windowId) {
 chrome.runtime.onInstalled.addListener(() => {
   setIcon();
   updateBadge();
+  refreshOpenTabs();
 });
+
+// After an install or update, Chrome doesn't put the new content script into
+// tabs that are already open. Add it to them so nobody has to reload pages.
+async function refreshOpenTabs() {
+  const tabs = await chrome.tabs.query({ url: ["http://*/*", "https://*/*"] }).catch(() => []);
+  await Promise.all(
+    tabs.map((t) =>
+      chrome.scripting.executeScript({ target: { tabId: t.id }, files: ["content.js"] }).catch(() => {})
+    )
+  );
+}
 chrome.runtime.onStartup.addListener(() => {
   setIcon();
   updateBadge();
