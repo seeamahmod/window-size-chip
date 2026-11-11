@@ -10,7 +10,7 @@ const UA = {
 const PLATFORM = { ios: "iPhone", ipad: "iPad", android: "Linux armv81", androidTab: "Linux armv81" };
 
 // Desktop presets resize the real window so the page's viewport is exactly this wide.
-const DESKTOP = [1920, 1600, 1536, 1440, 1366, 1280, 1200, 1024];
+const DESKTOP = [2560, 1920, 1600, 1536, 1440, 1366, 1280, 1200];
 
 // Mobile/tablet presets are emulated (Chrome won't shrink a real window this small).
 const DEVICES = {

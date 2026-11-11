@@ -11,7 +11,7 @@ it to common screen sizes in one click.
   live while you drag the window edge.
 - **Popup**: click the icon to see the exact window and viewport `W × H`.
 - **Size presets** (click the toolbar icon):
-  - **Desktop**: 1920, 1600, 1536, 1440, 1366, 1280, 1200, 1024. The real window
+  - **Desktop**: 2560, 1920, 1600, 1536, 1440, 1366, 1280, 1200. The real window
     is resized so the page's viewport is exactly that wide. If your screen is too
     narrow for that size, it's emulated and scaled down to fit.
   - **Tablet and mobile**: iPhone SE through iPhone 16 Pro Max, Galaxy, Pixel,
