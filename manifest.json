@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Window Size Chip",
+  "version": "1.0.0",
+  "description": "Shows the live width × height of your browser window and viewport.",
+  "permissions": ["storage", "tabs"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Window size"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ]
+}
