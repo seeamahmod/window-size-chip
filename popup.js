@@ -11,21 +11,19 @@ function paintOrientation() {
   for (const [group, el] of [["Tablet", "tablet"], ["Mobile", "mobile"]]) {
     [...$(el).children].forEach((b, i) => {
       const d = DEVICES[group][i];
-      b.querySelector(".sz").textContent = land ? `${d.h} × ${d.w}` : `${d.w} × ${d.h}`;
+      b.children[1].textContent = land ? `${d.h} × ${d.w}` : `${d.w} × ${d.h}`;
     });
   }
 }
 
-async function setOrientation(o) {
+function setOrientation(o) {
   orientation = o;
   chrome.storage.local.set({ orientation: o });
   paintOrientation();
-  // Already showing a device? Turn it right away.
-  const k = lastState?.emulation?.mode === "frame" ? lastState.emulation.key : null;
-  if (k) {
-    const [group, index] = k.split("-");
-    run({ cmd: "emulate", group, index: +index, orientation: o });
-  }
+  // A phone or tablet is already showing? Turn it right away.
+  const k = lastState?.emulation?.key || "";
+  const m = k.match(/^(Tablet|Mobile)-(\d+)$/);
+  if (m) run({ cmd: "emulate", group: m[1], index: +m[2], orientation: o });
 }
 
 function send(msg) {
@@ -82,11 +80,9 @@ function build() {
     DEVICES[group].forEach((d, i) => {
       const b = document.createElement("button");
       b.dataset.key = `${group}-${i}`;
-      b.title = `${d.name} in ${d.color}`;
-      b.innerHTML = `<span class="dev"><span class="dot"></span><span><span class="n"></span><small></small></span></span><span class="sz"></span>`;
-      b.querySelector(".dot").style.background = d.hex;
-      b.querySelector(".n").textContent = d.name;
-      b.querySelector("small").textContent = d.color;
+      b.innerHTML = `<span></span><span></span>`;
+      b.children[0].textContent = d.name;
+      b.children[1].textContent = `${d.w} × ${d.h}`;
       b.onclick = () => run({ cmd: "emulate", group, index: i, orientation });
       $(el).appendChild(b);
     });
