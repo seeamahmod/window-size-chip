@@ -253,13 +253,30 @@ async function resizeWindowTo(tabId, windowId, target) {
   let m = await measure(tabId);
   const zoom = await chrome.tabs.getZoom(tabId).catch(() => 1);
 
-  // Width of window borders + scrollbar-free frame, in window units.
-  const frame = m ? m.outerWidth - Math.round(m.innerWidth * zoom) : 16;
+  // Maximized, full-screen or snapped windows can't take a size directly. Leave
+  // that state first and wait for it to finish (macOS animates leaving full
+  // screen; some Linux window managers apply it late).
+  const keepHeight = win.state !== "normal" ? win.height : null;
+  if (win.state !== "normal") {
+    await chrome.windows.update(windowId, { state: "normal" });
+    for (let i = 0; i < 25; i++) {
+      await sleep(60);
+      win = await chrome.windows.get(windowId);
+      if (win.state === "normal") break;
+    }
+    await sleep(win.state === "normal" ? 250 : 0);
+    win = await chrome.windows.get(windowId);
+    m = (await measure(tabId)) || m;
+  }
+
+  // Width of the window's own frame (borders, plus any side panel), in window units.
+  // It's 0 on most macOS and Linux setups and a few px on Windows.
+  const frame = m ? Math.max(0, m.outerWidth - Math.round(m.innerWidth * zoom)) : 16;
   let width = Math.round(target * zoom) + frame;
 
   const update = (w) => {
-    const props = { state: "normal", width: w };
-    if (win.state === "maximized" || win.state === "fullscreen") props.height = win.height;
+    const props = { width: w };
+    if (keepHeight) props.height = keepHeight;
     // Keep the window on screen when it grows.
     if (m?.screen) {
       const right = m.screen.availLeft + m.screen.availWidth;
@@ -269,11 +286,21 @@ async function resizeWindowTo(tabId, windowId, target) {
     return chrome.windows.update(windowId, props);
   };
 
+  // Waits until the window actually reports the new width (or gives up).
+  const settle = async (w) => {
+    for (let i = 0; i < 16; i++) {
+      await sleep(50);
+      const now = await chrome.windows.get(windowId);
+      if (now.width === w) break;
+    }
+    await sleep(60);
+  };
+
   await update(width);
+  await settle(width);
 
   // Nudge until the page's viewport is exactly the target width.
-  for (let i = 0; i < 4 && m; i++) {
-    await sleep(120);
+  for (let i = 0; i < 5 && m; i++) {
     m = await measure(tabId);
     win = await chrome.windows.get(windowId);
     if (!m || m.innerWidth === target) break;
@@ -282,6 +309,7 @@ async function resizeWindowTo(tabId, windowId, target) {
     if (next === win.width) break;
     width = next;
     await update(width);
+    await settle(width);
   }
 
   m = await measure(tabId);

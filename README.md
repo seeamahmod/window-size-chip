@@ -25,6 +25,16 @@ it to common screen sizes in one click.
 A few sites refuse to be shown inside another page; those may stay blank at
 phone and tablet sizes.
 
+## Supported systems
+
+Works in desktop Chrome on **Windows, macOS, Linux (Ubuntu, Fedora, Debian and
+others) and ChromeOS**, and in other Chromium browsers that run Chrome
+extensions, such as Microsoft Edge, Brave, Opera and Vivaldi.
+
+On a phone or tablet (iPhone, iPad, Android), Chrome doesn't run extensions at
+all, so it can't be installed there. Use the phone and tablet sizes on your
+computer instead.
+
 ## Install (unpacked)
 
 1. Open `chrome://extensions`.
