@@ -85,15 +85,24 @@ async function getEmulation(tabId) {
   return (await chrome.storage.session.get(k))[k] || null;
 }
 
+// Attaches the debugger unless this extension is already attached to the tab
+// (e.g. when switching a device between vertical and horizontal).
 async function attach(tabId) {
-  const targets = await chrome.debugger.getTargets();
-  const already = targets.some((t) => t.tabId === tabId && t.attached && t.extensionId === chrome.runtime.id);
-  if (!already) {
-    try {
-      await chrome.debugger.attach({ tabId }, "1.3");
-    } catch (e) {
-      if (!String(e.message).includes("Already attached")) throw e;
+  try {
+    // Only succeeds if we're already attached.
+    await chrome.debugger.sendCommand({ tabId }, "Runtime.evaluate", { expression: "1" });
+    return;
+  } catch {
+    /* not attached yet */
+  }
+  try {
+    await chrome.debugger.attach({ tabId }, "1.3");
+  } catch (e) {
+    const msg = String(e?.message || e);
+    if (/already attached/i.test(msg)) {
+      throw new Error("Another tool is debugging this tab (for example DevTools device mode or another extension). Close it and try again.");
     }
+    throw e;
   }
 }
 
