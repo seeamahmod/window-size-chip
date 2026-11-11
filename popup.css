@@ -1,0 +1,66 @@
+:root {
+  --bg: #1f2023;
+  --panel: #2a2b2f;
+  --hover: #34363b;
+  --text: #f1f1f1;
+  --muted: #9a9ca3;
+  --accent: #34c77b;
+  --accent-ink: #0d2a1b;
+  --warn: #f2b84b;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  width: 300px;
+  max-height: 580px;
+  background: var(--bg);
+  color: var(--text);
+  font: 13px/1.35 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid #ffffff14;
+  position: sticky; top: 0; background: var(--bg); z-index: 1;
+}
+.label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+.now { font-size: 20px; font-weight: 650; }
+.win { color: var(--muted); font-size: 11px; }
+.toggle { display: flex; gap: 6px; align-items: center; color: var(--muted); cursor: pointer; }
+.toggle input { accent-color: var(--accent); margin: 0; }
+
+.emu {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  margin: 10px 14px 0; padding: 8px 10px;
+  background: #34c77b1f; border: 1px solid #34c77b55; border-radius: 8px;
+}
+.emu button { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.status { margin: 10px 14px 0; color: var(--warn); font-size: 12px; }
+.hidden { display: none !important; }
+
+section { padding: 10px 14px 4px; }
+h2 { margin: 0 0 8px; font-size: 12px; font-weight: 600; }
+h2 small { color: var(--muted); font-weight: 400; margin-left: 4px; }
+
+button {
+  border: 0; border-radius: 7px; cursor: pointer;
+  font: inherit; color: var(--text); background: var(--panel);
+  padding: 7px 8px;
+}
+button:hover { background: var(--hover); }
+button.active { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+
+.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.list { display: flex; flex-direction: column; gap: 4px; }
+.list button { display: flex; justify-content: space-between; text-align: left; }
+.list button span:last-child { color: var(--muted); }
+.list button.active span:last-child { color: var(--accent-ink); }
+
+.custom { display: flex; align-items: center; gap: 6px; padding-bottom: 12px; }
+.custom input {
+  width: 0; flex: 1; padding: 7px 8px; border-radius: 7px;
+  border: 1px solid #ffffff1f; background: var(--panel); color: var(--text); font: inherit;
+}
+.custom span { color: var(--muted); }
+.custom button { background: var(--accent); color: var(--accent-ink); font-weight: 600; padding: 7px 12px; }

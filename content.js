@@ -83,6 +83,22 @@
     if (!document.hidden) onResize();
   }, 50);
 
+  // The popup/background asks for live sizes when applying presets.
+  chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+    if (msg?.type !== "getSize") return;
+    sendResponse({
+      innerWidth: window.innerWidth,
+      innerHeight: window.innerHeight,
+      outerWidth: window.outerWidth,
+      outerHeight: window.outerHeight,
+      screen: {
+        availLeft: screen.availLeft ?? 0,
+        availWidth: screen.availWidth,
+        availHeight: screen.availHeight,
+      },
+    });
+  });
+
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area !== "local") return;
     if (changes.chipHidden || changes.chipCorner) {
