@@ -57,7 +57,12 @@ button.active { background: var(--accent); color: var(--accent-ink); font-weight
 .list button span:last-child { color: var(--muted); }
 .list button.active span:last-child { color: var(--accent-ink); }
 
-.custom { display: flex; align-items: center; gap: 6px; padding-bottom: 12px; }
+.custom { display: flex; align-items: center; gap: 6px; padding-bottom: 6px; }
+footer {
+  padding: 10px 14px 12px;
+  border-top: 1px solid #ffffff14;
+  color: var(--muted); font-size: 11px; text-align: center;
+}
 .custom input {
   width: 0; flex: 1; padding: 7px 8px; border-radius: 7px;
   border: 1px solid #ffffff1f; background: var(--panel); color: var(--text); font: inherit;
