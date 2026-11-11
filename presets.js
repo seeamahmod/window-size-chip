@@ -12,6 +12,18 @@ const PLATFORM = { ios: "iPhone", ipad: "iPad", android: "Linux armv81", android
 // Desktop presets resize the real window so the page's viewport is exactly this wide.
 const DESKTOP = [2560, 1920, 1600, 1536, 1440, 1366, 1280, 1200];
 
+// Foldables have a folded and an unfolded size. Unfolded spans both screens,
+// with the hinge (in CSS px) down the middle.
+const FOLDABLE = [
+  {
+    name: "Surface Duo",
+    folded: { w: 540, h: 720 },
+    unfolded: { w: 1114, h: 720, hinge: 34 },
+    dpr: 2.5,
+    ua: "android",
+  },
+];
+
 // Mobile/tablet presets are emulated (Chrome won't shrink a real window this small).
 const DEVICES = {
   Mobile: [

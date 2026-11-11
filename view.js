@@ -27,6 +27,20 @@ iframe.style.width = `${W}px`;
 iframe.style.height = `${H}px`;
 iframe.src = currentUrl;
 
+// Foldables shown unfolded: draw the hinge across the middle of the page.
+const hinge = +params.get("hinge") || 0;
+if (hinge) {
+  const bar = document.createElement("div");
+  bar.className = "hinge";
+  if (params.get("hd") === "h") {
+    bar.style.cssText = `left:0;right:0;top:${((H - hinge) / 2 / H) * 100}%;height:${(hinge / H) * 100}%;` +
+      "background:linear-gradient(180deg,#1b1b1d,#3a3a3e 50%,#1b1b1d)";
+  } else {
+    bar.style.cssText = `top:0;bottom:0;left:${((W - hinge) / 2 / W) * 100}%;width:${(hinge / W) * 100}%`;
+  }
+  box.appendChild(bar);
+}
+
 // Fit inside the tab: shrink when bigger, never enlarge.
 function fit() {
   const stage = document.getElementById("stage");

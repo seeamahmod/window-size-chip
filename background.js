@@ -1,4 +1,4 @@
-/* global DESKTOP, DEVICES, UA */
+/* global DEVICES, FOLDABLE, UA */
 importScripts("presets.js");
 
 // ---------- Toolbar icon + badge ----------
@@ -210,7 +210,7 @@ async function pageColor(windowId) {
 }
 
 /** Shows the tab's page at exactly w×h, centered. */
-async function emulate(tabId, { w, h, dpr = 0, ua = null, label, key }) {
+async function emulate(tabId, { w, h, dpr = 0, ua = null, hinge = 0, hingeDir = "v", label, key }) {
   const before = await getEmulation(tabId);
   let url;
   let real = before?.real || null;
@@ -231,7 +231,7 @@ async function emulate(tabId, { w, h, dpr = 0, ua = null, label, key }) {
     [emuKey(tabId)]: { label, key, w, h, url, real, bg },
     [viewUrlKey(tabId)]: url,
   });
-  const p = new URLSearchParams({ w: String(w), h: String(h), ua: ua || "", dpr: String(dpr || 0), bg: bg || "", u: url });
+  const p = new URLSearchParams({ w: String(w), h: String(h), ua: ua || "", dpr: String(dpr || 0), bg: bg || "", hinge: String(hinge), hd: hingeDir, u: url });
   await chrome.tabs.update(tabId, { url: `${VIEW_URL}?${p}` });
   return {};
 }
@@ -375,18 +375,23 @@ async function handle(msg, sender) {
     case "resize":
       return resizeWindowTo(tabId, windowId, msg.width);
     case "emulate": {
-      const d = DEVICES[msg.group]?.[msg.index];
+      const foldable = msg.group === "Foldable";
+      const d = foldable ? FOLDABLE[msg.index] : DEVICES[msg.group]?.[msg.index];
       if (!d) return { error: "Unknown device." };
+      const unfolded = foldable && msg.fold === "unfolded";
+      const dims = foldable ? (unfolded ? d.unfolded : d.folded) : d;
       const land = msg.orientation === "landscape";
-      const w = land ? d.h : d.w;
-      const h = land ? d.w : d.h;
+      const w = land ? dims.h : dims.w;
+      const h = land ? dims.w : dims.h;
+      const notes = [foldable ? (unfolded ? "unfolded" : "folded") : "", land ? "horizontal" : ""].filter(Boolean);
       return emulate(tabId, {
         w,
         h,
         dpr: d.dpr,
-        mobile: !!d.ua,
         ua: d.ua,
-        label: `${d.name} (${w} × ${h}${land ? ", horizontal" : ""})`,
+        hinge: dims.hinge || 0,
+        hingeDir: land ? "h" : "v",
+        label: `${d.name} (${w} × ${h}${notes.length ? ", " + notes.join(", ") : ""})`,
         key: `${msg.group}-${msg.index}`,
       });
     }

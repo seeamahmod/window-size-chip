@@ -1,29 +1,49 @@
-/* global DESKTOP, DEVICES */
+/* global DESKTOP, DEVICES, FOLDABLE */
 const $ = (id) => document.getElementById(id);
 let tab;
 let orientation = "portrait";
+let fold = "folded";
 let lastState = null;
+
+const sizeText = (w, h) => (orientation === "landscape" ? `${h} × ${w}` : `${w} × ${h}`);
 
 function paintOrientation() {
   const land = orientation === "landscape";
   $("oPortrait").setAttribute("aria-pressed", String(!land));
   $("oLandscape").setAttribute("aria-pressed", String(land));
+  $("fFolded").setAttribute("aria-pressed", String(fold === "folded"));
+  $("fUnfolded").setAttribute("aria-pressed", String(fold === "unfolded"));
   for (const [group, el] of [["Tablet", "tablet"], ["Mobile", "mobile"]]) {
     [...$(el).children].forEach((b, i) => {
       const d = DEVICES[group][i];
-      b.children[1].textContent = land ? `${d.h} × ${d.w}` : `${d.w} × ${d.h}`;
+      b.children[1].textContent = sizeText(d.w, d.h);
     });
   }
+  [...$("foldable").children].forEach((b, i) => {
+    const s = FOLDABLE[i][fold];
+    b.children[1].textContent = sizeText(s.w, s.h);
+  });
+}
+
+// A phone, tablet or foldable is already showing? Apply the change right away.
+function reapply() {
+  const k = lastState?.emulation?.key || "";
+  const m = k.match(/^(Tablet|Mobile|Foldable)-(\d+)$/);
+  if (m) run({ cmd: "emulate", group: m[1], index: +m[2], orientation, fold });
 }
 
 function setOrientation(o) {
   orientation = o;
   chrome.storage.local.set({ orientation: o });
   paintOrientation();
-  // A phone or tablet is already showing? Turn it right away.
-  const k = lastState?.emulation?.key || "";
-  const m = k.match(/^(Tablet|Mobile)-(\d+)$/);
-  if (m) run({ cmd: "emulate", group: m[1], index: +m[2], orientation: o });
+  reapply();
+}
+
+function setFold(f) {
+  fold = f;
+  chrome.storage.local.set({ fold: f });
+  paintOrientation();
+  if ((lastState?.emulation?.key || "").startsWith("Foldable-")) reapply();
 }
 
 function send(msg) {
@@ -72,6 +92,15 @@ async function run(msg) {
   }
 }
 
+function row(key, name, onclick) {
+  const b = document.createElement("button");
+  b.dataset.key = key;
+  b.innerHTML = `<span></span><span></span>`;
+  b.children[0].textContent = name;
+  b.onclick = onclick;
+  return b;
+}
+
 function build() {
   for (const w of DESKTOP) {
     const b = document.createElement("button");
@@ -83,17 +112,18 @@ function build() {
   }
   for (const [group, el] of [["Tablet", "tablet"], ["Mobile", "mobile"]]) {
     DEVICES[group].forEach((d, i) => {
-      const b = document.createElement("button");
-      b.dataset.key = `${group}-${i}`;
-      b.innerHTML = `<span></span><span></span>`;
-      b.children[0].textContent = d.name;
-      b.children[1].textContent = `${d.w} × ${d.h}`;
-      b.onclick = () => run({ cmd: "emulate", group, index: i, orientation });
-      $(el).appendChild(b);
+      $(el).appendChild(row(`${group}-${i}`, d.name, () => run({ cmd: "emulate", group, index: i, orientation })));
     });
   }
+  FOLDABLE.forEach((d, i) => {
+    $("foldable").appendChild(
+      row(`Foldable-${i}`, d.name, () => run({ cmd: "emulate", group: "Foldable", index: i, orientation, fold }))
+    );
+  });
   $("oPortrait").onclick = () => setOrientation("portrait");
   $("oLandscape").onclick = () => setOrientation("landscape");
+  $("fFolded").onclick = () => setFold("folded");
+  $("fUnfolded").onclick = () => setFold("unfolded");
   $("reset").onclick = () => run({ cmd: "reset" });
   $("custom").onsubmit = (e) => {
     e.preventDefault();
@@ -105,8 +135,9 @@ function build() {
 
 (async () => {
   [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  const saved = await chrome.storage.local.get("orientation");
+  const saved = await chrome.storage.local.get(["orientation", "fold"]);
   if (saved.orientation === "landscape") orientation = "landscape";
+  if (saved.fold === "unfolded") fold = "unfolded";
   build();
   paintOrientation();
   refresh();
