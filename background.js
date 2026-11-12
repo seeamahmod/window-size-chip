@@ -1,4 +1,4 @@
-/* global DEVICES, FOLDABLE, UA */
+/* global DEVICES, FOLDABLE, UA, statusBarHeight */
 importScripts("presets.js");
 
 // ---------- Toolbar icon + badge ----------
@@ -228,7 +228,7 @@ async function emulate(tabId, { w, h, dpr = 0, ua = null, frame = "", landscape 
 
   await setViewRules(tabId, ua);
   await chrome.storage.session.set({
-    [emuKey(tabId)]: { label, key, w, h, url, real, bg },
+    [emuKey(tabId)]: { label, key, w, h, sb: statusBarHeight(frame, landscape), url, real, bg },
     [viewUrlKey(tabId)]: url,
   });
   const p = new URLSearchParams({ w: String(w), h: String(h), ua: ua || "", dpr: String(dpr || 0), bg: bg || "", f: frame, o: landscape ? "l" : "p", u: url });
@@ -368,7 +368,7 @@ async function handle(msg, sender) {
         chrome.windows.get(windowId),
       ]);
       const viewSize = emulation
-        ? { innerWidth: emulation.w, innerHeight: emulation.h, outerWidth: win.width, outerHeight: win.height }
+        ? { innerWidth: emulation.w, innerHeight: emulation.h - (emulation.sb || 0), outerWidth: win.width, outerHeight: win.height }
         : null;
       return { size: viewSize || size, emulation, window: { width: win.width, height: win.height } };
     }

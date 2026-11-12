@@ -50,6 +50,23 @@ body.dark #device { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .35), inset 
   position: absolute; border-radius: 2px;
   background: linear-gradient(90deg, #4a515e, #7c8596, #4a515e);
 }
+/* Status bar at the top of the screen; the page starts below it. */
+.statusbar {
+  position: absolute; left: 0; top: 0; right: 0; z-index: 1;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 18px;
+  font: 600 13px/1 -apple-system, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif;
+  font-variant-numeric: tabular-nums;
+  user-select: none; pointer-events: none;
+}
+.statusbar .sb-icons { display: inline-flex; align-items: center; gap: 5px; }
+.statusbar .sb-icons b { font-size: 12px; font-weight: 600; margin-left: 1px; }
+.statusbar.ears { display: grid; padding: 4px 0 0; }
+.statusbar.ears .sb-time { justify-self: center; font-size: 16px; font-weight: 650; padding-left: 14px; }
+.statusbar.ears .sb-icons { justify-self: center; padding-right: 10px; }
+.statusbar.classic { padding: 0 6px; font-size: 12px; }
+.statusbar.classic .sb-icons svg { transform: scale(.8); }
+.sb-tablet, .sb-duo, .sb-punch, .sb-fold { font-size: 12px; padding: 0 16px; }
 #page {
   position: absolute; left: 0; top: 0;
   display: block; border: 0;

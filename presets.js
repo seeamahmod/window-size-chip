@@ -12,6 +12,21 @@ const PLATFORM = { ios: "iPhone", ipad: "iPad", android: "Linux armv81", android
 // Desktop presets resize the real window so the page's viewport is exactly this wide.
 const DESKTOP = [2560, 1920, 1600, 1536, 1440, 1366, 1280, 1200];
 
+// Status bar height (CSS px) per frame style: [vertical, horizontal].
+// The page starts below it, as in the real browser. iPhones hide the status
+// bar when turned horizontal; Windows tablets have none.
+const STATUS_BAR = {
+  island: [54, 0],
+  notch: [47, 0],
+  home: [20, 0],
+  punch: [28, 28],
+  fold: [28, 28],
+  tablet: [24, 24],
+  surface: [0, 0],
+  duo: [28, 28],
+};
+const statusBarHeight = (frame, landscape) => (STATUS_BAR[frame] || [0, 0])[landscape ? 1 : 0];
+
 // Foldables have a folded and an unfolded size (unfolded spans both screens).
 const FOLDABLE = [
   {

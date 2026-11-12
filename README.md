@@ -19,7 +19,8 @@ it to common screen sizes in one click.
     at the device's exact viewport, centered in the tab on a shade just lighter
     or darker than the site's own background, with the device's mobile user
     agent and pixel density, inside a frame of that kind of device (Dynamic
-    Island, notch, home button, punch-hole camera, tablet or Surface Duo).
+    Island, notch, home button, punch-hole camera, tablet or Surface Duo), with
+    a live status bar at the top and the page starting below it, as on the device.
     Always shown at 100% with no scrollbar taking width;
     if it's bigger than your window, scroll to see the rest.
   - **Foldable**: Surface Duo, folded (540 × 720) or unfolded across both
