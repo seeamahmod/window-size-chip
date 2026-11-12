@@ -10,11 +10,15 @@ const dpr = +params.get("dpr") || 0;
 let currentUrl = params.get("u") || "about:blank";
 const hasChrome = typeof chrome !== "undefined" && !!chrome.tabs;
 
-const iframe = document.getElementById("page");
 const box = document.getElementById("box");
 
 // The site can't see this page, so the device settings travel in the frame's
-// name; inject.js reads them before the site's own scripts run.
+// name; inject.js reads them before the site's own scripts run. The frame is
+// created here with its name already set: renaming an existing frame doesn't
+// reach a page from another site.
+const iframe = document.createElement("iframe");
+iframe.id = "page";
+iframe.title = "Page at the selected size";
 iframe.name = "wsc:" + JSON.stringify({
   ua: uaKey && typeof UA !== "undefined" ? UA[uaKey] : null,
   platform: uaKey && typeof PLATFORM !== "undefined" ? PLATFORM[uaKey] : null,
@@ -26,6 +30,7 @@ iframe.allow = "clipboard-read; clipboard-write; fullscreen; geolocation; camera
 iframe.style.width = `${W}px`;
 iframe.style.height = `${H}px`;
 iframe.src = currentUrl;
+box.appendChild(iframe);
 
 // Fit inside the tab: shrink when bigger, never enlarge.
 function fit() {
