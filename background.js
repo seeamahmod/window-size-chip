@@ -115,6 +115,11 @@ async function setViewRules(tabId, ua) {
           { header: "x-frame-options", operation: "remove" },
           { header: "content-security-policy", operation: "remove" },
         ],
+        // Some sites (Facebook, Instagram) refuse pages requested as frames;
+        // ask for them the way a normal tab does.
+        requestHeaders: [
+          { header: "sec-fetch-dest", operation: "set", value: "document" },
+        ],
       },
       condition: { tabIds: [tabId], resourceTypes: ["sub_frame"] },
     },
