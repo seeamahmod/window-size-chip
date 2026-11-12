@@ -25,6 +25,9 @@ iframe.name = "wsc:" + JSON.stringify({
   touch: !!uaKey,
   mobile: uaKey === "ios" || uaKey === "android",
   dpr,
+  sw: W,
+  sh: H,
+  land: params.get("o") === "l",
 });
 iframe.allow = "clipboard-read; clipboard-write; fullscreen; geolocation; camera; microphone; autoplay";
 iframe.style.width = `${W}px`;
