@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Window Size Chip",
   "short_name": "Window Size",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "author": "Seeam Ahmod",
   "description": "See your exact window and viewport size live, and switch any page to desktop, tablet or phone sizes in one click.",
   "homepage_url": "https://github.com/seeamahmod/window-size-chip",

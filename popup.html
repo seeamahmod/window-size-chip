@@ -29,7 +29,7 @@
     <div class="grid" id="desktop"></div>
   </section>
 
-  <section>
+  <section id="posSection" class="hidden">
     <h2>Tablet, mobile &amp; foldable position</h2>
     <div class="seg" role="group" aria-label="Tablet and mobile position">
       <button type="button" id="oPortrait" aria-pressed="true">
@@ -55,7 +55,7 @@
 
   <section>
     <h2>Foldable <small>emulated</small></h2>
-    <div class="seg" role="group" aria-label="Foldable state">
+    <div class="seg hidden" id="foldSeg" role="group" aria-label="Foldable state">
       <button type="button" id="fFolded" aria-pressed="true">
         <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="2" width="10" height="20" rx="2"></rect></svg>
         Folded
@@ -65,7 +65,7 @@
         Unfolded
       </button>
     </div>
-    <div class="list" id="foldable" style="margin-top: 6px"></div>
+    <div class="list" id="foldable"></div>
   </section>
 
   <section>
