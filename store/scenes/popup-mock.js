@@ -23,7 +23,7 @@ function popupMock(el, o) {
     <section><h2>Desktop <small>resizes the window</small></h2>
       <div class="grid">${DESKTOP.map((w) => `<button class="${o.active === "d" + w ? "active" : ""}">${w}</button>`).join("")}</div>
     </section>
-    <section><h2>Tablet &amp; mobile position</h2>
+    <section><h2>Tablet, mobile &amp; foldable position</h2>
       <div class="seg"><button aria-pressed="${!land}">Vertical</button><button aria-pressed="${land}">Horizontal</button></div>
     </section>
     <section><h2>Tablet <small>emulated</small></h2><div class="list">${rows("Tablet", o.tablets ?? 3, o.tabletStart)}</div></section>
