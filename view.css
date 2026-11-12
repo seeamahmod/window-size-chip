@@ -26,6 +26,30 @@ body {
   box-shadow: 0 0 0 1px rgba(0, 0, 0, .08), 0 10px 40px rgba(0, 0, 0, .18);
 }
 body.dark #box { box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 10px 40px rgba(0, 0, 0, .5); }
+/* Device frame: one neutral graphite-and-titanium finish for every device. */
+#device {
+  position: relative; flex: none; margin: auto;
+  background: linear-gradient(145deg, #7c8596, #3a404b 40%, #5b6372 70%, #2c3038);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, .35),
+    inset 0 0 0 2px rgba(0, 0, 0, .25),
+    0 30px 70px rgba(0, 0, 0, .35);
+}
+body.dark #device { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .35), inset 0 0 0 2px rgba(0, 0, 0, .25), 0 30px 70px rgba(0, 0, 0, .6); }
+#device .bezel { position: absolute; background: #050506; }
+#device #box { margin: 0; z-index: 1; }
+#device .cutout { position: absolute; z-index: 2; background: #000; pointer-events: none; }
+#device .lens {
+  position: absolute; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle at 35% 35%, #3a4a6a, #0b0e14 65%);
+  box-shadow: 0 0 0 1px #15181f;
+}
+#device .slit { position: absolute; border-radius: 4px; background: #1b1c20; }
+#device .home-btn { position: absolute; border-radius: 50%; border: 2px solid #34363c; background: #0b0c0e; }
+#device .side-btn {
+  position: absolute; border-radius: 2px;
+  background: linear-gradient(90deg, #4a515e, #7c8596, #4a515e);
+}
 #page {
   position: absolute; left: 0; top: 0;
   display: block; border: 0;
