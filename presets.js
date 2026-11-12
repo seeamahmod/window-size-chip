@@ -12,7 +12,8 @@ const UA = {
 const PLATFORM = { ios: "iPhone", ipad: "iPad", android: "Linux armv81", androidTab: "Linux armv81" };
 
 // Desktop presets resize the real window so the page's viewport is exactly this wide.
-const DESKTOP = [2560, 1920, 1600, 1536, 1440, 1366, 1280, 1200];
+// The popup puts a "Full screen" button (maximize) before them.
+const DESKTOP = [1920, 1600, 1536, 1440, 1366, 1280, 1200];
 
 // Status bar height (CSS px) per frame style: [vertical, horizontal].
 // The page starts below it, as in the real browser. iPhones hide the status

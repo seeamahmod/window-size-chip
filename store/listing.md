@@ -30,7 +30,7 @@ LIVE SIZE
 • Click the icon to see the exact viewport width × height, with the full window size beside it.
 
 EXACT DESKTOP WIDTHS
-• 2560, 1920, 1600, 1536, 1440, 1366, 1280 and 1200.
+• Full screen (maximizes the window), 1920, 1600, 1536, 1440, 1366, 1280 and 1200.
 • The page lands on the exact pixel width you pick, accounting for borders, scrollbars and page zoom.
 
 PHONES AND TABLETS IN ONE CLICK

@@ -404,7 +404,7 @@ async function handle(msg, sender) {
       const viewSize = emulation
         ? { innerWidth: emulation.w, innerHeight: emulation.h - (emulation.sb || 0), outerWidth: win.width, outerHeight: win.height }
         : null;
-      return { size: viewSize || size, emulation, window: { width: win.width, height: win.height } };
+      return { size: viewSize || size, emulation, window: { width: win.width, height: win.height, state: win.state } };
     }
     case "resize":
       return resizeWindowTo(tabId, windowId, msg.width);
@@ -448,6 +448,11 @@ async function handle(msg, sender) {
     }
     case "reset":
       await stopEmulation(tabId);
+      return {};
+    case "fullscreen":
+      // Maximized, not F11 full screen: tabs and the address bar stay.
+      await stopEmulation(tabId);
+      await chrome.windows.update(windowId, { state: "maximized" });
       return {};
   }
 }

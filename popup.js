@@ -71,10 +71,19 @@ async function refresh() {
     $("vp").textContent = `${s.window.width} × ${s.window.height}`;
   }
   $("emu").classList.toggle("hidden", !s.emulation);
+  // While maximized, the hover shows the measured size; otherwise the screen's width.
+  const fullBtn = $("full");
+  if (fullBtn) {
+    const max = !s.emulation && /maximized|fullscreen/.test(s.window?.state || "") && s.size;
+    fullBtn.title = max
+      ? `Full screen: ${s.size.innerWidth} × ${s.size.innerHeight}`
+      : `Full screen: ${screen.availWidth}px wide`;
+  }
   $("emuLabel").textContent = s.emulation ? `Emulating ${s.emulation.label}` : "";
   document.querySelectorAll("[data-key]").forEach((b) => {
     const k = b.dataset.key;
-    const active = s.emulation ? s.emulation.key === k : s.size && k === `d${s.size.innerWidth}`;
+    const full = !s.emulation && /maximized|fullscreen/.test(s.window?.state || "");
+    const active = s.emulation ? s.emulation.key === k : k === "full" ? full : s.size && k === `d${s.size.innerWidth}`;
     b.classList.toggle("active", !!active);
   });
 }
@@ -103,6 +112,14 @@ function row(key, name, onclick) {
 }
 
 function build() {
+  // Full screen: maximizes the window, so the page gets this screen's full width.
+  const full = document.createElement("button");
+  full.id = "full";
+  full.textContent = "Full screen";
+  full.title = `Full screen: ${screen.availWidth}px wide`;
+  full.dataset.key = "full";
+  full.onclick = () => run({ cmd: "fullscreen" });
+  $("desktop").appendChild(full);
   for (const w of DESKTOP) {
     const b = document.createElement("button");
     b.textContent = `${w}`;

@@ -73,3 +73,4 @@ footer a:hover { text-decoration: underline; }
 }
 .custom span { color: var(--muted); }
 .custom button { background: var(--accent); color: var(--accent-ink); font-weight: 600; padding: 7px 12px; }
+#full { white-space: nowrap; font-size: 11.5px; padding-left: 2px; padding-right: 2px; letter-spacing: -.1px; }
