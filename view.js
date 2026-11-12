@@ -32,19 +32,10 @@ iframe.style.height = `${H}px`;
 iframe.src = currentUrl;
 box.appendChild(iframe);
 
-// Fit inside the tab: shrink when bigger, never enlarge.
-function fit() {
-  const stage = document.getElementById("stage");
-  const cs = getComputedStyle(stage);
-  const aw = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-  const ah = stage.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
-  const s = Math.min(1, aw / W, ah / H);
-  box.style.width = `${W * s}px`;
-  box.style.height = `${H * s}px`;
-  iframe.style.transform = s < 1 ? `scale(${s})` : "";
-}
-fit();
-window.addEventListener("resize", fit);
+// Always shown at exactly 100%: the frame on screen is the size the popup says.
+// When it's bigger than the window, the view scrolls around it instead.
+box.style.width = `${W}px`;
+box.style.height = `${H}px`;
 
 // Background: a softer version of the site's own color.
 //   white → off-white, black → gray, red → soft red.

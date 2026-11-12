@@ -1,18 +1,27 @@
 * { box-sizing: border-box; }
-html, body { height: 100%; margin: 0; }
+html, body { margin: 0; }
+html {
+  /* The view itself scrolls (when a size is bigger than the window) without a
+     visible scrollbar, so nothing takes space next to the page. */
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar { display: none; }
 body {
   /* Replaced with a shade of the site's own background once it loads. */
   background: #ececec;
-  overflow: hidden;
   transition: background-color .25s ease;
 }
 #stage {
-  height: 100%;
-  display: flex; align-items: center; justify-content: center;
+  /* Centered when it fits; when it doesn't, it starts at the edge and scrolls,
+     so no part of the page is ever cut off. */
+  display: flex;
+  min-width: 100vw; min-height: 100vh;
+  width: max-content;
   padding: 24px;
 }
 #box {
   position: relative; flex: none;
+  margin: auto;
   overflow: hidden;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, .08), 0 10px 40px rgba(0, 0, 0, .18);
 }
@@ -21,5 +30,4 @@ body.dark #box { box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 10px 40px rgb
   position: absolute; left: 0; top: 0;
   display: block; border: 0;
   background: #fff;
-  transform-origin: 0 0;
 }

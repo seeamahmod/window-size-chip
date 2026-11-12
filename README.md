@@ -13,12 +13,13 @@ it to common screen sizes in one click.
 - **Size presets** (click the toolbar icon):
   - **Desktop**: 2560, 1920, 1600, 1536, 1440, 1366, 1280, 1200. The real window
     is resized so the page's viewport is exactly that wide. If your screen is too
-    narrow for that size, it's emulated and scaled down to fit.
+    narrow for that size, it's shown at full size and you scroll to see the rest.
   - **Tablet and mobile**: iPhone SE through iPhone 18 Pro Max (including iPhone Air), Galaxy, Pixel,
     Galaxy Fold, iPad Mini/Air/Pro, Galaxy Tab, Surface Pro. The page is shown
     at the device's exact viewport, centered in the tab on a shade just lighter
     or darker than the site's own background, with the device's mobile user
-    agent and pixel density. If it doesn't fit, it's scaled down.
+    agent and pixel density. Always shown at 100% with no scrollbar taking width;
+    if it's bigger than your window, scroll to see the rest.
   - **Foldable**: Surface Duo, folded (540 × 720) or unfolded across both
     screens (1114 × 720).
   - **Vertical / Horizontal**: turn phones, tablets and foldables on their side.
