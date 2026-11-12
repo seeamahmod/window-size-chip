@@ -1,4 +1,4 @@
-// No on-page UI: reports the window size to the extension (toolbar badge and
+// No on-page UI: reports the viewport size to the extension (toolbar badge and
 // popup). Does no work until the window is resized or the popup asks.
 (() => {
   // Each install or update of the extension runs its own copy; a copy left
@@ -14,13 +14,12 @@
   // At most one message per frame while the window is being dragged.
   function report() {
     queued = false;
-    const w = window.outerWidth;
-    const h = window.outerHeight;
-    const key = `${w}x${h}`;
+    const s = { innerWidth: window.innerWidth, innerHeight: window.innerHeight, outerWidth: window.outerWidth, outerHeight: window.outerHeight };
+    const key = Object.values(s).join("x");
     if (key === last) return;
     last = key;
     try {
-      chrome.runtime.sendMessage({ type: "resized", width: w, height: h });
+      chrome.runtime.sendMessage({ type: "resized", ...s });
     } catch {
       /* extension was reloaded; this copy is stale */
     }
@@ -36,6 +35,9 @@
     },
     { passive: true }
   );
+
+  // Once on load, so the badge shows this page's viewport straight away.
+  report();
 
   chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     if (msg?.type !== "getSize") return;

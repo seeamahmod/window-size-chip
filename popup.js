@@ -63,11 +63,12 @@ async function refresh() {
   refresh.sig = sig;
   lastState = s;
   if (s.size) {
-    $("now").textContent = `${s.size.outerWidth} × ${s.size.outerHeight}`;
-    $("vp").textContent = `${s.size.innerWidth} × ${s.size.innerHeight}`;
+    // Viewport first: it's the size the website (and CSS) sees.
+    $("now").textContent = `${s.size.innerWidth} × ${s.size.innerHeight}`;
+    $("vp").textContent = `${s.size.outerWidth} × ${s.size.outerHeight}`;
   } else if (s.window) {
-    $("now").textContent = `${s.window.width} × ${s.window.height}`;
-    $("vp").textContent = "—";
+    $("now").textContent = "—";
+    $("vp").textContent = `${s.window.width} × ${s.window.height}`;
   }
   $("emu").classList.toggle("hidden", !s.emulation);
   $("emuLabel").textContent = s.emulation ? `Emulating ${s.emulation.label}` : "";

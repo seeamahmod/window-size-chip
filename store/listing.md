@@ -26,8 +26,8 @@ Window Size Chip is made for designers and developers who test responsive layout
 Most resizer tools change the window. But your CSS breakpoints care about the viewport, the part that actually shows your page. Borders, scrollbars and zoom eat into it, so you pick 1440 and end up testing at 1423 without knowing it. Window Size Chip measures the viewport and adjusts until it's exact.
 
 LIVE SIZE
-• The window width shows right on the toolbar icon and updates while you drag the window edge.
-• Click the icon to see the exact window and viewport width × height.
+• The viewport width shows right on the toolbar icon and updates while you drag the window edge.
+• Click the icon to see the exact viewport width × height, with the full window size beside it.
 
 EXACT DESKTOP WIDTHS
 • 2560, 1920, 1600, 1536, 1440, 1366, 1280 and 1200.

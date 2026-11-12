@@ -9,13 +9,20 @@ function setIcon() {
   chrome.action.setBadgeTextColor?.({ color: "#ffffff" });
 }
 
-let lastBadge = "";
-function setBadge(width, height) {
+// The badge shows the page's viewport width (what CSS and the website see),
+// per tab. Pages that can't report it (chrome://, Web Store…) fall back to
+// the window width minus Chrome's frame, learned from pages that can.
+let frameW = 16;
+let frameH = 0;
+const lastBadge = new Map();
+function setBadge(tabId, width, height) {
   const key = `${width}x${height}`;
-  if (key === lastBadge) return;
-  lastBadge = key;
-  chrome.action.setBadgeText({ text: String(width) });
-  chrome.action.setTitle({ title: `Window: ${width} × ${height}\nClick for preset sizes` });
+  if (lastBadge.get(tabId) === key) return;
+  lastBadge.set(tabId, key);
+  const t = tabId == null ? {} : { tabId };
+  chrome.action.setBadgeText({ ...t, text: String(width) });
+  chrome.action.setTitle({ ...t, title: `Viewport: ${width} × ${height}
+Click for preset sizes` });
 }
 
 async function updateBadge(windowId) {
@@ -24,10 +31,21 @@ async function updateBadge(windowId) {
       windowId == null
         ? await chrome.windows.getLastFocused()
         : await chrome.windows.get(windowId);
-    if (win && win.width != null) setBadge(win.width, win.height);
+    if (win && win.width != null) setBadge(null, Math.max(0, win.width - frameW), Math.max(0, win.height - frameH));
   } catch {
     /* window closed mid-update */
   }
+}
+
+// Sizes from the content script: the badge for that tab, and the frame size.
+async function badgeFromPage(tabId, m) {
+  if (!m || !m.innerWidth) return;
+  if (await getEmulation(tabId)) return;
+  if (m.outerWidth) {
+    frameW = Math.max(0, m.outerWidth - m.innerWidth);
+    frameH = Math.max(0, m.outerHeight - m.innerHeight);
+  }
+  setBadge(tabId, m.innerWidth, m.innerHeight);
 }
 
 chrome.runtime.onInstalled.addListener(() => {
@@ -53,6 +71,10 @@ chrome.runtime.onStartup.addListener(() => {
 chrome.windows.onBoundsChanged.addListener((win) => updateBadge(win.id));
 chrome.windows.onFocusChanged.addListener((id) => {
   if (id !== chrome.windows.WINDOW_ID_NONE) updateBadge(id);
+});
+// Background tabs may have been resized while hidden.
+chrome.tabs.onActivated.addListener(async ({ tabId }) => {
+  if (!(await getEmulation(tabId))) badgeFromPage(tabId, await measure(tabId));
 });
 
 // ---------- Helpers ----------
@@ -255,7 +277,13 @@ async function stopEmulation(tabId) {
 }
 
 // Leaving the view any other way (typing a URL, Back) ends it.
-chrome.tabs.onUpdated.addListener(async (tabId, info) => {
+chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
+  // Chrome clears a tab's own badge when it loads a new page.
+  if (info.status === "loading") lastBadge.delete(tabId);
+  if (info.status === "complete" && tab?.url?.startsWith(VIEW_URL)) {
+    const emu = await getEmulation(tabId);
+    if (emu) setBadge(tabId, emu.w, emu.h - (emu.sb || 0));
+  }
   if (!info.url || info.url.startsWith(VIEW_URL)) return;
   if (await getEmulation(tabId)) {
     await chrome.storage.session.remove([emuKey(tabId), viewUrlKey(tabId)]);
@@ -263,6 +291,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, info) => {
   }
 });
 chrome.tabs.onRemoved.addListener((tabId) => {
+  lastBadge.delete(tabId);
   chrome.storage.session.remove([emuKey(tabId), viewUrlKey(tabId)]);
   clearViewRules(tabId);
 });
@@ -337,7 +366,7 @@ async function resizeWindowTo(tabId, windowId, target) {
 
   m = await measure(tabId);
   win = await chrome.windows.get(windowId);
-  setBadge(win.width, win.height);
+  if (m) badgeFromPage(tabId, m);
 
   if (!m) {
     return { note: `Window set to ${win.width}px wide (this page can't report its viewport).` };
@@ -360,7 +389,7 @@ async function resizeWindowTo(tabId, windowId, target) {
 
 async function handle(msg, sender) {
   if (msg?.type === "resized") {
-    if (msg.width && msg.height) setBadge(msg.width, msg.height);
+    if (sender?.tab) badgeFromPage(sender.tab.id, msg);
     return;
   }
 

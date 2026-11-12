@@ -7,9 +7,9 @@ it to common screen sizes in one click.
 
 ## Features
 
-- **Toolbar badge**: the window width shows on the extension icon and updates
+- **Toolbar badge**: the viewport width (the space the page gets) shows on the extension icon and updates
   live while you drag the window edge.
-- **Popup**: click the icon to see the exact window and viewport `W × H`.
+- **Popup**: click the icon to see the exact viewport `W × H`, with the full window size beside it.
 - **Size presets** (click the toolbar icon):
   - **Desktop**: 2560, 1920, 1600, 1536, 1440, 1366, 1280, 1200. The real window
     is resized so the page's viewport is exactly that wide. If your screen is too
