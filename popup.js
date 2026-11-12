@@ -70,11 +70,6 @@ async function refresh() {
     $("vp").textContent = "—";
   }
   $("emu").classList.toggle("hidden", !s.emulation);
-  // The position switch only appears while a tablet, phone or foldable is
-  // showing, and Folded / Unfolded only while the foldable is.
-  const key = s.emulation?.key || "";
-  $("posSection").classList.toggle("hidden", !/^(Tablet|Mobile|Foldable)-/.test(key));
-  $("foldSeg").classList.toggle("hidden", !key.startsWith("Foldable-"));
   $("emuLabel").textContent = s.emulation ? `Emulating ${s.emulation.label}` : "";
   document.querySelectorAll("[data-key]").forEach((b) => {
     const k = b.dataset.key;

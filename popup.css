@@ -52,7 +52,6 @@ button.active { background: var(--accent); color: var(--accent-ink); font-weight
 
 .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 .list { display: flex; flex-direction: column; gap: 4px; }
-#foldSeg { margin-bottom: 6px; }
 .list button { display: flex; justify-content: space-between; text-align: left; }
 .list button span:last-child { color: var(--muted); }
 .list button.active span:last-child { color: var(--accent-ink); }
