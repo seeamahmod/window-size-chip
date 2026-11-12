@@ -67,6 +67,44 @@ body.dark #device { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .35), inset 
 .statusbar.classic { padding: 0 6px; font-size: 12px; }
 .statusbar.classic .sb-icons svg { transform: scale(.8); }
 .sb-tablet, .sb-duo, .sb-punch, .sb-fold { font-size: 12px; padding: 0 16px; }
+/* iOS 27 Liquid Glass: Safari's floating address bar and the home indicator.
+   Clicks pass through to the page so testing isn't blocked. */
+.ios-glass {
+  position: absolute; left: 12px; right: 12px; z-index: 2;
+  display: flex; align-items: center; gap: 8px;
+  pointer-events: none;
+  font: 500 15px/1 -apple-system, "SF Pro Text", system-ui, "Segoe UI", sans-serif;
+  color: #111;
+}
+.ios-glass.land { left: 50%; right: auto; width: 420px; transform: translateX(-50%); }
+.ios-glass .g-btn, .ios-glass .g-url {
+  display: flex; align-items: center; justify-content: center;
+  height: 48px; border-radius: 999px;
+  background: rgba(255, 255, 255, .55);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  backdrop-filter: blur(18px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .8),
+    inset 0 0 0 1px rgba(255, 255, 255, .45),
+    0 6px 20px rgba(0, 0, 0, .18);
+}
+.ios-glass .g-btn { width: 48px; flex: none; }
+.ios-glass .g-url { flex: 1; gap: 8px; padding: 0 16px; min-width: 0; }
+.ios-glass .g-host { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ios-glass.dark { color: #f5f5f7; }
+.ios-glass.dark .g-btn, .ios-glass.dark .g-url {
+  background: rgba(40, 40, 44, .55);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .22),
+    inset 0 0 0 1px rgba(255, 255, 255, .12),
+    0 6px 20px rgba(0, 0, 0, .4);
+}
+.ios-home {
+  position: absolute; left: 50%; bottom: 8px; z-index: 2;
+  width: 134px; height: 5px; border-radius: 3px; transform: translateX(-50%);
+  pointer-events: none;
+}
+.statusbar.ears .sb-time { font-size: 17px; }
 #page {
   position: absolute; left: 0; top: 0;
   display: block; border: 0;

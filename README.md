@@ -21,6 +21,8 @@ it to common screen sizes in one click.
     agent and pixel density, inside a frame of that kind of device (Dynamic
     Island, notch, home button, punch-hole camera, tablet or Surface Duo), with
     a live status bar at the top and the page starting below it, as on the device.
+    iPhones use the iOS 27 look: Safari 27 identity, the Liquid Glass address bar
+    and the home indicator.
     Always shown at 100% with no scrollbar taking width;
     if it's bigger than your window, scroll to see the rest.
   - **Foldable**: Surface Duo, folded (540 × 720) or unfolded across both

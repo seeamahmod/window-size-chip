@@ -63,9 +63,52 @@ if (SB) {
   box.appendChild(buildStatusBar(frameStyle, SB));
 }
 
+// ---------- iOS 27 (Liquid Glass) ----------
+// iPhones get Safari's floating glass address bar and the home indicator,
+// drawn over the bottom of the page like on the device. They don't change
+// the page's size; the page scrolls underneath, as in real Safari.
+let glassUrl = null;
+if (uaKey === "ios" && frameStyle) buildIosChrome(frameStyle, landscapeView);
+
 // Load the page only once everything around it is in place (moving a frame
 // in the page would load it twice).
 box.appendChild(iframe);
+
+function buildIosChrome(style, landscape) {
+  const m = String(params.get("bg") || "").match(/(\d+)\D+(\d+)\D+(\d+)/);
+  const [r, g, b] = m ? m.slice(1).map(Number) : [255, 255, 255];
+  // Glass follows the page: dark glass only on genuinely dark pages.
+  const dark = (0.299 * r + 0.587 * g + 0.114 * b) / 255 < 0.35;
+  const faceId = style !== "home";
+
+  const bar = document.createElement("div");
+  bar.className = `ios-glass${dark ? " dark" : ""}${landscape ? " land" : ""}`;
+  bar.style.bottom = `${faceId ? (landscape ? 10 : 26) : 10}px`;
+  const icon = (d) =>
+    `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  bar.innerHTML =
+    `<span class="g-btn">${icon('<path d="M15 18l-6-6 6-6"/>')}</span>` +
+    `<span class="g-url"><span class="g-host"></span>${icon('<path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/>').replace('width="20" height="20"', 'width="15" height="15"')}</span>` +
+    `<span class="g-btn">${icon('<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>')}</span>`;
+  glassUrl = bar.querySelector(".g-host");
+  setHost(currentUrl);
+  box.appendChild(bar);
+
+  if (faceId) {
+    const home = document.createElement("div");
+    home.className = "ios-home";
+    home.style.background = dark ? "rgba(255,255,255,.85)" : "rgba(0,0,0,.85)";
+    box.appendChild(home);
+  }
+}
+function setHost(url) {
+  if (!glassUrl) return;
+  try {
+    glassUrl.textContent = new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    glassUrl.textContent = "";
+  }
+}
 
 function buildStatusBar(style, height) {
   const bar = document.createElement("div");
@@ -259,6 +302,7 @@ window.addEventListener("message", (e) => {
   if (e.source !== iframe.contentWindow) return;
   if (e.data?.wsc === "url") {
     currentUrl = String(e.data.href);
+    setHost(currentUrl);
     if (e.data.title) document.title = e.data.title;
     saveUrl();
   }
