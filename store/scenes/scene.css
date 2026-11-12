@@ -37,10 +37,8 @@ body {
   position: absolute; width: 300px; border-radius: 12px; overflow: hidden;
   box-shadow: 0 24px 60px rgba(0, 0, 0, .55); border: 1px solid #34363b;
 }
-.popup-wrap > .pop { color: var(--text); font-size: 13px; background-color: var(--bg); background-image: radial-gradient(#5ec8ff66 1.1px, transparent 1.4px), radial-gradient(#5ec8ff26 0.8px, transparent 1.1px); background-size: 24px 24px, 6px 6px; }
-.popup-wrap header { position: relative; }
-.site h2 { font: 700 30px/1.1 system-ui, sans-serif; text-transform: none; letter-spacing: 0; color: inherit; }
-.site h2::before { content: none; }
+.popup-wrap > .pop { background: var(--bg); color: var(--text); font-size: 13px; }
+.popup-wrap header { position: static; }
 
 /* A simple made-up web page used inside the screenshots. */
 .site { background: #fff; color: #1d2621; font-family: system-ui, sans-serif; height: 100%; }
