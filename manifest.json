@@ -1,11 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "Window Size Chip",
-  "short_name": "Window Size",
-  "version": "1.14.0",
+  "name": "Shrink Window",
+  "short_name": "Shrink Window",
+  "version": "1.15.0",
   "author": "Seeam Ahmod",
   "description": "See your exact window and viewport size live, and switch any page to desktop, tablet or phone sizes in one click.",
-  "homepage_url": "https://github.com/seeamahmod/window-size-chip",
+  "homepage_url": "https://github.com/seeamahmod/shrink-window",
   "icons": {
     "16": "icons/icon16.png",
     "32": "icons/icon32.png",

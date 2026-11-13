@@ -5,7 +5,7 @@ Copy each part into the matching field of the Chrome Web Store Developer Dashboa
 ## Store listing tab
 
 **Name**
-Window Size Chip
+Shrink Window
 
 **Summary** (from the manifest, 113 characters)
 See your exact window and viewport size live, and switch any page to desktop, tablet or phone sizes in one click.
@@ -21,9 +21,9 @@ English
 ```
 Know your exact screen size. Switch it in one click.
 
-Window Size Chip is made for designers and developers who test responsive layouts all day.
+Shrink Window is made for designers and developers who test responsive layouts all day.
 
-Most resizer tools change the window. But your CSS breakpoints care about the viewport, the part that actually shows your page. Borders, scrollbars and zoom eat into it, so you pick 1440 and end up testing at 1423 without knowing it. Window Size Chip measures the viewport and adjusts until it's exact.
+Most resizer tools change the window. But your CSS breakpoints care about the viewport, the part that actually shows your page. Borders, scrollbars and zoom eat into it, so you pick 1440 and end up testing at 1423 without knowing it. Shrink Window measures the viewport and adjusts until it's exact.
 
 LIVE SIZE
 • The viewport width shows right on the toolbar icon and updates while you drag the window edge.
@@ -46,7 +46,7 @@ CUSTOM SIZES
 LIGHT AND PRIVATE
 • No data collected, no ads, no tracking, no account.
 • Does nothing in the background until you resize the window or open it.
-• Free and open source: https://github.com/seeamahmod/window-size-chip
+• Free and open source: https://github.com/seeamahmod/shrink-window
 
 Works on Windows, macOS, Linux and ChromeOS.
 ```
@@ -64,8 +64,8 @@ Works on Windows, macOS, Linux and ChromeOS.
 | Field | Value |
 |---|---|
 | Official URL | (leave empty unless you own a verified site) |
-| Homepage URL | https://github.com/seeamahmod/window-size-chip |
-| Support URL | https://github.com/seeamahmod/window-size-chip/issues |
+| Homepage URL | https://github.com/seeamahmod/shrink-window |
+| Support URL | https://github.com/seeamahmod/shrink-window/issues |
 
 ## Privacy practices tab
 
@@ -95,7 +95,7 @@ Tick nothing in the list of data types. Then tick all three certifications:
 - I do not use or transfer user data to determine creditworthiness or for lending purposes.
 
 **Privacy policy URL**
-https://github.com/seeamahmod/window-size-chip/blob/main/PRIVACY.md
+https://github.com/seeamahmod/shrink-window/blob/main/PRIVACY.md
 
 ## Distribution tab
 

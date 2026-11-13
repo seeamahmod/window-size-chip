@@ -6,7 +6,7 @@ $root = Split-Path -Parent $PSScriptRoot
 $version = (Get-Content "$root\manifest.json" -Raw | ConvertFrom-Json).version
 $dist = Join-Path $root "dist"
 New-Item -ItemType Directory -Force $dist | Out-Null
-$zipPath = Join-Path $dist "window-size-chip-$version.zip"
+$zipPath = Join-Path $dist "shrink-window-$version.zip"
 if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
 
 # Only the files the extension needs at runtime.

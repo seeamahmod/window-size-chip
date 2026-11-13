@@ -1,6 +1,6 @@
 <img width="1080" height="1350" alt="Poster 1080×1350@1x" src="https://github.com/user-attachments/assets/a6aaab58-1943-41b0-abca-bdb5355c7415" />
 
-# Window Size Chip
+# Shrink Window
 
 A Chrome extension that shows the live size of your browser window and switches
 it to common screen sizes in one click.

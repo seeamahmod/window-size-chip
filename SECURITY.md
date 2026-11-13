@@ -15,7 +15,7 @@ Please **don't open a public issue** for security problems.
 
 Report it privately instead:
 
-1. Go to the [Security tab](https://github.com/seeamahmod/window-size-chip/security) of this repository.
+1. Go to the [Security tab](https://github.com/seeamahmod/shrink-window/security) of this repository.
 2. Click **Report a vulnerability**.
 3. Describe the problem, the steps to reproduce it, and what an attacker could do with it.
 

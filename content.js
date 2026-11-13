@@ -5,8 +5,8 @@
   // over from an older version just stops responding.
   if (window.top !== window) return;
   const token = `${chrome.runtime.id}@${chrome.runtime.getManifest().version}`;
-  if (window.__windowSizeChip === token) return;
-  window.__windowSizeChip = token;
+  if (window.__shrinkWindow === token) return;
+  window.__shrinkWindow = token;
 
   let last = "";
   let queued = false;

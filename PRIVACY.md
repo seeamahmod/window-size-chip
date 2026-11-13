@@ -2,7 +2,7 @@
 
 _Last updated: November 11, 2026_
 
-Window Size Chip is a browser extension that shows your window and viewport size and lets you view pages at other screen sizes.
+Shrink Window is a browser extension that shows your window and viewport size and lets you view pages at other screen sizes.
 
 ## What it collects
 
@@ -29,4 +29,4 @@ None. The extension contains no analytics, ads or third-party code.
 
 ## Contact
 
-Questions about this policy: open an issue at <https://github.com/seeamahmod/window-size-chip/issues>.
+Questions about this policy: open an issue at <https://github.com/seeamahmod/shrink-window/issues>.
